@@ -71,7 +71,7 @@ for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','app.js?v=5
 
 /* Critical regression: the plan is 0-indexed, but day numbers are 1-indexed.
    Previously renderDay read PLAN[db.selectedDay], displaying the following day. */
-assert.match(app,/var p=PLAN\\[db\\.selectedDay-1\\],day=p\\.day/,'A clicked day must render its own program entry');
+assert.ok(app.includes('var p=PLAN[db.selectedDay-1],day=p.day'),'A clicked day must render its own program entry');
 assert.ok(!app.includes('PLAN[db.selectedDay]'),'Off-by-one day rendering bug reintroduced');
 for(const day of [1,2,3,4,25,45,75,99,100]){
   const chosen=plan[day-1];
