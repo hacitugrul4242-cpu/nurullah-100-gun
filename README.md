@@ -55,6 +55,15 @@ Varsayılan eğitmenler:
 
 Kaynak verisi `resources.js` içerisinde, otomatik kapsam denetimi `tests/validate.mjs` dosyasındadır. Toplam **15 ders bölümü**, **17 doğrulanmış ilk video** ve **4 doğrulanmış kamp listesi** eklenmiştir. Diğer başlıklar için 233 ana konu başlığına özel eğitmen araması kullanılır.
 
+
+## Gothic Crimson tasarımı ve gün gezinme
+
+- Kullanıcı arayüzü koyu bordo–kırmızı gotik temaya geçirildi. Tasarım `gothic.css` ve özgün `gothic-scene.svg` dosyalarındadır.
+- Gün seçici şeridinin ilk üç günü sol kenarda kalır; otomatik ortalama kaynaklı **1. gün kaybolması** giderildi.
+- **Önceki / Sonraki** okları, klavyede sol-sağ yön tuşları ve Home/End ile gezinme desteklenir.
+- Gün 1–100 aralığında tüm programlar incelenebilir; ileri tarihli günlerin görev işaretleri önceki güvenlik kuralıyla kilitlidir.
+- Kayıt anahtarı, 100 günlük görev kimlikleri ve JSON yedekleme biçimi değiştirilmedi.
+
 ## Kaynak notu
 
 MEB'in **2026 YKS ortak ders kazanım ve açıklamaları** ve standart YKS hazırlık konu adları esas alınmıştır. 2027 YKS için nihai resmî kapsam değildir. Programda görünür başlıklar sadeleştirilmiştir; ayrıntılı alt kazanımlar için proje konuşmasında teslim edilmiş **TYT + AYT Ayrıntılı Konu Envanteri PDF** kullanılmalıdır.
