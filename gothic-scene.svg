@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="850" viewBox="0 0 1050 850">
+<defs>
+<radialGradient id="glow" cx=".73" cy=".29" r=".62"><stop stop-color="#b51a2e" stop-opacity=".27"/><stop offset=".62" stop-color="#6c101b" stop-opacity=".10"/><stop offset="1" stop-color="#0b070a" stop-opacity="0"/></radialGradient>
+<radialGradient id="moon" cx=".32" cy=".24" r=".73"><stop stop-color="#f5575b"/><stop offset=".55" stop-color="#b72334"/><stop offset="1" stop-color="#52111c"/></radialGradient>
+<linearGradient id="stone" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#260e15"/><stop offset="1" stop-color="#09080b"/></linearGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1050" height="850" fill="url(#glow)"/>
+<circle cx="824" cy="205" r="131" fill="#df253a" opacity=".17" filter="url(#blur)"/>
+<circle cx="824" cy="205" r="99" fill="url(#moon)" opacity=".88"/>
+<g fill="#531722" opacity=".23"><circle cx="794" cy="169" r="22"/><circle cx="846" cy="240" r="16"/><circle cx="788" cy="237" r="9"/><circle cx="872" cy="175" r="12"/></g>
+<g fill="#140b10" opacity=".7">
+<path d="M0 730 L105 668 L160 680 L227 612 L280 627 L331 583 L405 651 L477 617 L551 660 L612 604 L709 653 L782 585 L837 622 L913 580 L1050 648V850H0Z"/>
+</g>
+<g fill="url(#stone)" stroke="#721728" stroke-opacity=".27" stroke-width="2">
+<path d="M710 740V560H751V488L771 446L792 488V531H819V431L847 388L874 431V487H906V549H945V660L996 692V850H667V760Z"/>
+<path d="M691 561L731 536L771 561Z M750 489L771 411L792 489Z M817 431L847 332L877 431Z M899 552L925 518L950 552Z"/>
+<path d="M726 505H740V566H726Z M766 475H776V540H766Z M841 407H854V473H841Z M912 550H925V596H912Z" fill="#08090b"/>
+</g>
+<g fill="#be293b" opacity=".5">
+<path d="M844 462V440Q848 434 852 440V462Z M766 519V501Q771 494 776 501V519Z M916 583V566Q920 560 925 566V583Z"/>
+</g>
+<g stroke="#9d2434" stroke-opacity=".16" fill="none" stroke-width="2">
+<path d="M115 850V315Q167 204 219 315V850 M123 850V333Q167 238 211 333V850 M86 850V297Q167 155 248 297V850"/>
+<path d="M85 420H249 M97 480H237 M105 541H229 M164 230V850"/>
+<path d="M37 850V252Q165 91 295 252V850"/>
+<path d="M375 820V545Q410 487 446 545V820 M364 820V540Q411 463 458 540V820"/>
+</g>
+<g fill="#a92334" opacity=".1">
+<path d="M70 850V430Q165 265 260 430V850H70Z"/>
+</g>
+<path d="M0 738Q185 708 359 747T702 740T1050 760V850H0Z" fill="#100a0d" opacity=".6"/>
+</svg>
