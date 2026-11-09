@@ -216,6 +216,7 @@ test('Subtopic checks survive JSON export/import without changing main completio
   await page.locator('[data-tab="catalog"]').click();
   await page.locator('#courseFilter').selectOption('tyt-mat');
   await page.locator('#topicSearch').fill('Temel Kavramlar');
-  await page.locator('.subtopic-toggle').click();
+  const toggle=page.locator('.subtopic-toggle');
+  if(await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();
   await expect(page.locator('.subtopic-line input').first()).toBeChecked();
 });
