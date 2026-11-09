@@ -21,7 +21,7 @@ const subtopics=JSON.parse(inflateSync(Buffer.from(packed,'base64')).toString('u
 assert.equal(Object.keys(subtopics).length,233,'All 233 topics must have editorial subtopics');
 assert.equal(Object.values(subtopics).reduce((n,a)=>n+a.length,0),1096,'Editorial checklist must contain exactly 1,096 points');
 const catalogIds=catalog.flatMap(c=>c.topics.map(t=>t.id));
-assert.deepEqual(Object.keys(subtopics).sort(),catalogIds.slice().sort(),'Subtopic keys must match curriculum IDs');
+assert.equal(Object.keys(subtopics).sort().join('|'),Array.from(catalogIds).sort().join('|'),'Subtopic keys must match curriculum IDs');
 assert.ok(Object.values(subtopics).every(a=>Array.isArray(a)&&a.every(s=>typeof s==='string'&&s.trim())));
 assert.equal(catalog.length,15);
 assert.equal(plan.length,100);
