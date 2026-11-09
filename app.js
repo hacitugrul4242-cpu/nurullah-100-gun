@@ -508,7 +508,7 @@
           if(conf&&conf.options.some(function(o){return o.id===e[1]}))db.instructors[e[0]]=e[1];
         });
         Object.entries(obj.subtopicProgress||{}).forEach(function(e){
-          var m=/^([a-z]+-[a-z]+-\\d{2}):(\\d{1,2})$/.exec(e[0]);
+          var m=/^([a-z]+-[a-z]+-\d{2}):(\d{1,2})$/.exec(e[0]);
           if(!m||e[1]!==true)return;
           var known=CATALOG.some(function(c){return c.topics.some(function(t){return t.id===m[1]})});
           if(known&&Number(m[2])<100)db.subtopicProgress[e[0]]=true;
