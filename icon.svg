@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><defs><linearGradient id="wine" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#ac253b"/><stop offset="1" stop-color="#2a101a"/></linearGradient></defs><rect width="192" height="192" rx="44" fill="#10080d"/><rect x="15" y="15" width="162" height="162" rx="35" fill="url(#wine)" stroke="#e9767f" stroke-opacity=".75" stroke-width="2"/><path d="M57 138V53h15l44 54V53h19v85h-16L75 84v54Z" fill="#ffe5dc"/><path d="M38 149l17 17m99-17l-17 17M45 41l12-12m90 12l-12-12" stroke="#df6b70" stroke-width="3" opacity=".4"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-label="Nurullah 100">
+<defs><linearGradient id="sage" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#eaf2eb"/><stop offset="1" stop-color="#d5e5d9"/></linearGradient></defs>
+<rect width="192" height="192" rx="44" fill="#f4f6f5"/>
+<rect x="14" y="14" width="164" height="164" rx="38" fill="url(#sage)" stroke="#a2bba9" stroke-width="2"/>
+<path d="M58 139V53h15l45 56V53h17v86h-15L75 83v56Z" fill="#41654f"/>
+<path d="M53 151h86" stroke="#93b29a" stroke-width="3" stroke-linecap="round"/>
+</svg>
