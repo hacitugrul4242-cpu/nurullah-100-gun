@@ -101,3 +101,25 @@ footer{padding-top:28px;margin-top:20px;border-top:1px solid var(--stroke);font-
 .overdue-item{width:100%;text-align:left;border:1px solid var(--stroke);border-radius:10px;background:#ffffff05;color:var(--text);padding:10px 12px;font-size:11px;line-height:1.5}
 .overdue-item:hover{border-color:var(--mint);background:#64e6c20d}
 @media(max-width:720px){.stats-main{min-width:0}}
+
+/* Eğitmen kaynakları v3 — görev tamamlamadan bağımsız ders bağlantıları */
+.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.task-item{display:block}
+.task-line{display:grid;grid-template-columns:19px minmax(0,1fr);gap:10px;align-items:start;cursor:pointer}
+.task-line input{margin:2px 0 0;accent-color:var(--mint);width:16px;height:16px;cursor:pointer}
+.task-resource-actions{margin:9px 0 0 29px;padding-top:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;border-top:1px solid #ffffff10}
+.teacher-name{flex-basis:100%;font-size:10px;font-weight:650;color:var(--muted)}
+.lesson-link{display:inline-flex;align-items:center;justify-content:center;gap:3px;line-height:1.3;font-size:10px;font-weight:750;border:1px solid #3a4a5c;background:#172331;border-radius:8px;padding:7px 9px;color:#d6e3ed;text-decoration:none;max-width:100%;white-space:normal}
+.lesson-link:hover,.lesson-link:focus-visible{border-color:var(--mint);color:var(--mint);background:#17312f}
+.lesson-link.verified{background:#17403855;border-color:#5ad5ae88;color:#91f5d4}
+.lesson-link.playlist{color:#c6b9ff;border-color:#7770bd66}
+.resources-note{margin:12px 0 16px;display:block}
+.teacher-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.source-setting-card{border:1px solid var(--stroke);border-radius:15px;background:linear-gradient(180deg,#14202b,#111922);padding:16px;display:grid;gap:11px;align-content:start}
+.source-setting-head{display:flex;align-items:start;gap:14px;justify-content:space-between;flex-wrap:wrap}
+.source-setting-head strong{font-size:14px}
+.source-setting-head label{display:grid;gap:5px;flex:1;min-width:160px;font-size:10px;color:var(--muted)}
+.source-teacher-select{max-width:100%;min-width:0;width:100%;font-size:12px;border:1px solid var(--stroke);border-radius:10px;background:#1a2531;padding:10px;color:var(--text)}
+.source-setting-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+@media(max-width:900px){.teacher-settings{grid-template-columns:1fr}}
+@media(max-width:580px){.tabs .tab{font-size:10px;padding:9px 4px;line-height:1.25}.task-resource-actions{margin-left:26px;gap:6px}.lesson-link{font-size:10px;padding:7px}.source-setting-head{display:block}.source-setting-head label{margin-top:9px}}
