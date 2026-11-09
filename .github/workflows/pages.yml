@@ -36,7 +36,7 @@ jobs:
       - name: Build minimal static application
         run: |
           mkdir -p public
-          cp index.html styles.css gothic.css gothic-scene.svg icon.svg manifest.webmanifest curriculum.js plan.js resources.js app.js sw.js taslak.html public/
+          cp index.html styles.css gothic.css gothic-scene.svg icon.svg manifest.webmanifest curriculum.js plan.js resources.js subtopics-data.js app.js sw.js taslak.html public/
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
