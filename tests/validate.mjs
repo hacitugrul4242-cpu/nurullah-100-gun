@@ -2,10 +2,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {inflateSync} from 'node:zlib';
 
 const read = path => fs.readFileSync(new URL('../'+path, import.meta.url), 'utf8');
 const context = {window:{}};
-for (const file of ['curriculum.js','plan.js','resources.js']) {
+for (const file of ['curriculum.js','plan.js','resources.js','subtopics-data.js']) {
   new vm.Script(read(file), {filename:file}).runInNewContext(context);
 }
 new vm.Script(read('app.js'), {filename:'app.js'});
@@ -13,6 +14,15 @@ const catalog=context.window.NURULLAH_CATALOG;
 const plan=context.window.NURULLAH_PLAN;
 const audit=context.window.NURULLAH_AUDIT;
 const resources=context.window.NURULLAH_LESSON_SOURCES;
+
+const packed=context.window.NURULLAH_SUBTOPICS_DEFLATE_B64;
+assert.equal(typeof packed,'string','The subtopic archive must be bundled');
+const subtopics=JSON.parse(inflateSync(Buffer.from(packed,'base64')).toString('utf8'));
+assert.equal(Object.keys(subtopics).length,233,'All 233 topics must have editorial subtopics');
+assert.equal(Object.values(subtopics).reduce((n,a)=>n+a.length,0),1096,'Editorial checklist must contain exactly 1,096 points');
+const catalogIds=catalog.flatMap(c=>c.topics.map(t=>t.id));
+assert.deepEqual(Object.keys(subtopics).sort(),catalogIds.slice().sort(),'Subtopic keys must match curriculum IDs');
+assert.ok(Object.values(subtopics).every(a=>Array.isArray(a)&&a.every(s=>typeof s==='string'&&s.trim())));
 assert.equal(catalog.length,15);
 assert.equal(plan.length,100);
 assert.equal(audit.lastNewTopicDay,75);
@@ -63,7 +73,7 @@ for(const [topicId,v] of Object.entries(resources.verifiedFirstVideos)){
   assert.ok(v.title);
 }
 const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
-for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','app.js?v=5']){
+for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','subtopics-data.js?v=1','app.js?v=6']){
   assert.ok(html.includes(x),'Missing HTML script '+x);
   assert.ok(sw.includes('./'+x),'Missing offline asset '+x);
 }
@@ -90,9 +100,12 @@ assert.ok(app.includes("stepDay(-1)")&&app.includes("stepDay(1)"),'Previous/next
 assert.ok(app.includes("e.key==='ArrowLeft'")&&app.includes("e.key==='ArrowRight'"),'Keyboard navigation missing');
 assert.ok(app.includes("db.selectedDay=Math.min(100,Math.max(1,next))"),'Day bounds not enforced');
 assert.ok(app.includes("setAttribute('aria-current','date')"),'Selected day should have accessible current state');
-assert.ok(html.includes('gothic.css?v=4'),'Gothic styling missing from page');
-assert.ok(sw.includes("'./gothic.css?v=4'")&&sw.includes("'./gothic-scene.svg'"),'Offline cache missing Gothic art');
-assert.ok(sw.includes("'./app.js?v=5'"),'Offline cache app version not updated');
+assert.ok(html.includes('gothic.css?v=5'),'Gothic styling missing from page');
+assert.ok(sw.includes("'./gothic.css?v=5'")&&sw.includes("'./gothic-scene.svg'"),'Offline cache missing Gothic art');
+assert.ok(sw.includes("'./app.js?v=6'"),'Offline cache app version not updated');
+assert.ok(app.includes('loadSubtopics()')&&app.includes('subtopicProgress:'),'Subtopic progress must remain persistent');
+assert.ok(html.includes('id="subtopicSummary"')&&html.includes('id="subtopicStats"'),'Subtopic controls missing');
+assert.ok(sw.includes("'./subtopics-data.js?v=1'"),'Subtopic archive missing from offline cache');
 const crimson=read('gothic.css');
 assert.ok(crimson.includes('.day-arrow')&&crimson.includes('pointer-events:none'),'Gothic navigation style regression');
 assert.ok(read('gothic-scene.svg').includes('<svg'),'Gothic background scene missing');
@@ -101,4 +114,4 @@ for(const x of ['view-sources','teacherSettings','view-day','view-catalog','view
 for(const x of ['selectedSource','topicQuery','matchedVideo','renderSources','instructors:'])assert.ok(app.includes(x));
 
 console.log('PASS: 100 days, 233 topics, 358 sessions, '+searchable+' teacher-topic searches, '+playable+' verified playlists, '+
- Object.keys(resources.verifiedFirstVideos).length+' verified first videos; all core routines intact.');
+ Object.keys(resources.verifiedFirstVideos).length+' verified first videos; and 1,096 subtopics; all core routines intact.');
