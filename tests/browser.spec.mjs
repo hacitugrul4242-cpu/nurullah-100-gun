@@ -247,7 +247,8 @@ test('Completing a prior-day task from Day 3 removes it and updates its original
   const original=await page.evaluate(()=>window.NURULLAH_PLAN[0].tasks[0].id);
   const currentBadge=await page.locator('#dayBadge').textContent();
   const total=await page.locator('#dailyBacklogList .backlog-task').count();
-  await page.locator('#dailyBacklogList .backlog-day').first().locator('.backlog-task input').first().check();
+  // Completion removes the row immediately; .check() would re-query the next unchecked row.
+  await page.locator('#dailyBacklogList .backlog-day').first().locator('.backlog-task input').first().click();
   await expect(page.locator('#dailyBacklogList .backlog-task')).toHaveCount(total-1);
   await expect(page.locator('#dayBadge')).toHaveText(currentBadge);
   const stored=await page.evaluate(id=>JSON.parse(localStorage.getItem('nurullah100-app-v1')).progress[id],original);
