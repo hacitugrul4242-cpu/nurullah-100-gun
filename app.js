@@ -3,6 +3,7 @@
   var CATALOG=window.NURULLAH_CATALOG||[];
   var PLAN=window.NURULLAH_PLAN||[];
   var AUDIT=window.NURULLAH_AUDIT||{};
+  var SOURCES=window.NURULLAH_LESSON_SOURCES||{courses:{},verifiedFirstVideos:{},searchLabels:{}};
   if(PLAN.length!==100){document.body.textContent='Program verileri yüklenemedi.';return;}
   var STORAGE_KEY='nurullah100-app-v1';
   var $=function(id){return document.getElementById(id)};
@@ -19,13 +20,14 @@
   function dateOfDay(day){var x=db.startDate.split('-').map(Number),d=new Date(x[0],x[1]-1,x[2],12);
     d.setDate(d.getDate()+day-1);return d;}
   function dateLabel(day){return dateOfDay(day).toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
-  function newDb(){return {kind:'nurullah100',version:1,startDate:localISO(),selectedDay:1,progress:{},notes:{},ratings:{}};}
+  function newDb(){return {kind:'nurullah100',version:1,startDate:localISO(),selectedDay:1,progress:{},notes:{},ratings:{},instructors:{}};}
   function load(){try{var old=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
     if(!old||old.kind!=='nurullah100'||old.version!==1)return newDb();
     return Object.assign(newDb(),old,
       {progress:old.progress&&typeof old.progress==='object'?old.progress:{},
        notes:old.notes&&typeof old.notes==='object'?old.notes:{},
-       ratings:old.ratings&&typeof old.ratings==='object'?old.ratings:{}});
+       ratings:old.ratings&&typeof old.ratings==='object'?old.ratings:{},
+       instructors:old.instructors&&typeof old.instructors==='object'?old.instructors:{}});
   }catch(e){return newDb()}}
   var db=load();
   if(!validDate(db.startDate))db.startDate=localISO();
@@ -88,16 +90,68 @@
     $('startDate').value=db.startDate;
     $('jumpDay').value=String(db.selectedDay);
   }
+  /* Eğitmen tercihleri: öğretmen araması ile doğrulanmış video/playlist farklı kaynak tipleridir. */
+  function sourceConfig(courseId){return SOURCES.courses[courseId]||null;}
+  function selectedSource(courseId){
+    var conf=sourceConfig(courseId);
+    if(!conf)return null;
+    var preferred=db.instructors[courseId]||conf.defaults;
+    return conf.options.find(function(x){return x.id===preferred})||
+           conf.options.find(function(x){return x.id===conf.defaults})||conf.options[0];
+  }
+  function topicQuery(topic,courseId){
+    var conf=sourceConfig(courseId),teacher=selectedSource(courseId);
+    if(!teacher||!conf)return null;
+    var raw=(SOURCES.searchLabels||{})[topic.topicId]||topic.title||topic.label;
+    raw=String(raw||'').replace(/\s*\(\d+\/\d+\)\s*$/,'').replace(/\s*\(İleri\)/i,'').trim();
+    var exam=courseId.startsWith('ayt')?'AYT':'TYT';
+    return 'https://www.youtube.com/results?search_query='+encodeURIComponent(teacher.query+' '+exam+' '+raw+' konu anlatımı');
+  }
+  function matchedVideo(topic,courseId){
+    var entry=(SOURCES.verifiedFirstVideos||{})[topic.topicId];
+    var selected=selectedSource(courseId);
+    return entry&&selected&&entry.instructor===selected.id&&Number(topic.part||1)===1?entry:null;
+  }
+  function externalAnchor(title,url,kind){
+    var a=document.createElement('a');
+    a.href=url;a.target='_blank';a.rel='noopener noreferrer';
+    a.className='lesson-link'+(kind?' '+kind:'');
+    a.textContent=title;
+    return a;
+  }
   function createTask(t,day){
-    var label=document.createElement('label'),input=document.createElement('input'),body=document.createElement('div');
-    label.className='task-item'+(done(t.id)?' done':'');
+    var card=document.createElement('div'),line=document.createElement('label');
+    var input=document.createElement('input'),body=document.createElement('div');
+    card.className='task-item'+(done(t.id)?' done':'');
+    line.className='task-line';
     input.type='checkbox';input.checked=done(t.id);
     input.disabled=day>todayIndex();
     input.addEventListener('change',function(){toggle(t.id,day,input.checked)});
     var isCourse=!!t.course;
     body.innerHTML='<span class="task-title">'+esc(t.label)+'</span>'+
       (isCourse?'<span class="task-subtitle">'+esc(t.course)+'</span><span class="tag '+esc(t.color)+'">'+esc(t.exam)+'</span>':'');
-    label.appendChild(input);label.appendChild(body);return label;
+    line.appendChild(input);line.appendChild(body);card.appendChild(line);
+    if(isCourse&&t.courseId){
+      var teacher=selectedSource(t.courseId),url=topicQuery(t,t.courseId),video=matchedVideo(t,t.courseId);
+      if(teacher&&url){
+        var actions=document.createElement('div');actions.className='task-resource-actions';
+        var name=document.createElement('span');name.className='teacher-name';
+        name.textContent='Eğitmen: '+teacher.name;actions.appendChild(name);
+        if(video){
+          var direct=externalAnchor('▶ İlk videoyu aç',video.url,'verified');
+          direct.title='Doğrulanmış video: '+video.title;
+          actions.appendChild(direct);
+        }
+        actions.appendChild(externalAnchor('⌕ Hocada konuyu ara',url,'search'));
+        if(teacher.playlist){
+          var playlist=externalAnchor('☷ Kamp listesi',teacher.playlist,'playlist');
+          playlist.title='Doğrulanmış eğitmen oynatma listesi; konu içindeki ilgili dersi seç';
+          actions.appendChild(playlist);
+        }
+        card.appendChild(actions);
+      }
+    }
+    return card;
   }
   function makeSection(title,desc,items,day){
     var card=document.createElement('section');card.className='surface agenda-card';
@@ -174,6 +228,38 @@
     });
     if(!target.children.length)target.innerHTML='<div class="empty">Aramaya uyan konu bulunamadı.</div>';
   }
+  function renderSources(){
+    var host=$('teacherSettings');if(!host)return;
+    host.innerHTML='';
+    CATALOG.forEach(function(c){
+      var conf=sourceConfig(c.id);
+      if(!conf)return;
+      var current=selectedSource(c.id);
+      var card=document.createElement('section');card.className='source-setting-card';
+      var head=document.createElement('div');head.className='source-setting-head';
+      var title=document.createElement('strong');title.textContent=c.name;
+      var label=document.createElement('label');
+      label.textContent='Eğitmen tercihi';
+      var select=document.createElement('select');
+      select.className='source-teacher-select';
+      select.setAttribute('aria-label',c.name+' eğitmen seçimi');
+      conf.options.forEach(function(o){
+        var option=document.createElement('option');option.value=o.id;option.textContent=o.name;select.appendChild(option);
+      });
+      select.value=current.id;
+      select.addEventListener('change',function(){
+        db.instructors[c.id]=select.value;save();renderSources();toast(c.name+' eğitmeni güncellendi');
+      });
+      label.appendChild(select);
+      head.appendChild(title);head.appendChild(label);card.appendChild(head);
+      var links=document.createElement('div');links.className='source-setting-links';
+      var courseUrl='https://www.youtube.com/results?search_query='+encodeURIComponent(current.query+' '+c.exam+' konu anlatımı');
+      links.appendChild(externalAnchor('⌕ Ders videolarında ara',courseUrl,'search'));
+      if(current.playlist)links.appendChild(externalAnchor('☷ Doğrulanmış kamp listesi',current.playlist,'playlist'));
+      if(current.channel)links.appendChild(externalAnchor('Eğitmen kanalı',current.channel,'search'));
+      card.appendChild(links);host.appendChild(card);
+    });
+  }
   function renderStats(){
     var overdue=$('overdueList');
     if(overdue){
@@ -213,9 +299,9 @@
       var active=btn.dataset.tab===tab;btn.classList.toggle('active',active);
       btn.setAttribute('aria-current',active?'page':'false');
     });
-    ['day','catalog','stats'].forEach(function(s){$('view-'+s).hidden=s!==tab;});
+    ['day','catalog','sources','stats'].forEach(function(s){$('view-'+s).hidden=s!==tab;});
   }
-  function render(){renderHeader();renderTabs();if(tab==='day')renderDay();else if(tab==='catalog')renderCatalog();else renderStats();}
+  function render(){renderHeader();renderTabs();if(tab==='day')renderDay();else if(tab==='catalog')renderCatalog();else if(tab==='sources')renderSources();else renderStats();}
   function today(){var n=todayIndex();selectDay(Math.max(1,n));}
   function setup(){
     var sel=$('jumpDay');PLAN.forEach(function(p){var o=document.createElement('option');o.value=p.day;o.textContent=p.day+'. gün';sel.appendChild(o)});
@@ -256,6 +342,10 @@
         Object.entries(obj.progress).forEach(function(e){if(allowed.has(e[0])&&e[1]===true)db.progress[e[0]]=true});
         Object.entries(obj.notes||{}).forEach(function(e){if(/^(100|[1-9]\d?)$/.test(e[0])&&typeof e[1]==='string')db.notes[e[0]]=e[1].slice(0,4000)});
         Object.entries(obj.ratings||{}).forEach(function(e){if(/^(100|[1-9]\d?)$/.test(e[0])&&Number.isInteger(e[1])&&e[1]>=1&&e[1]<=5)db.ratings[e[0]]=e[1]});
+        Object.entries(obj.instructors||{}).forEach(function(e){
+          var conf=sourceConfig(e[0]);
+          if(conf&&conf.options.some(function(o){return o.id===e[1]}))db.instructors[e[0]]=e[1];
+        });
         save();render();toast('Yedek geri yüklendi.');
       }catch(e){toast(e.message||'Yedek okunamadı.');}finally{this.value='';}
     });
@@ -269,7 +359,7 @@
     });
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installEvent=e;});
     if('serviceWorker' in navigator)window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js?v=2',{updateViaCache:'none'}).catch(function(){});
+      navigator.serviceWorker.register('./sw.js?v=3',{updateViaCache:'none'}).catch(function(){});
     });
   }
   setup();save();render();
