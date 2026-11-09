@@ -63,10 +63,22 @@ for(const [topicId,v] of Object.entries(resources.verifiedFirstVideos)){
   assert.ok(v.title);
 }
 const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
-for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','app.js?v=4']){
+for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','app.js?v=5']){
   assert.ok(html.includes(x),'Missing HTML script '+x);
   assert.ok(sw.includes('./'+x),'Missing offline asset '+x);
 }
+
+
+/* Critical regression: the plan is 0-indexed, but day numbers are 1-indexed.
+   Previously renderDay read PLAN[db.selectedDay], displaying the following day. */
+assert.match(app,/var p=PLAN\\[db\\.selectedDay-1\\],day=p\\.day/,'A clicked day must render its own program entry');
+assert.ok(!app.includes('PLAN[db.selectedDay]'),'Off-by-one day rendering bug reintroduced');
+for(const day of [1,2,3,4,25,45,75,99,100]){
+  const chosen=plan[day-1];
+  assert.equal(chosen.day,day,'Day '+day+' must resolve to itself');
+}
+assert.equal(plan[0].day,1,'Day 1 must resolve to first plan item, not the second');
+assert.equal(plan[99].day,100,'Day 100 must resolve to last plan item');
 
 /* Regression: day 1 must stay reachable after selecting day 2.
    The old scrollIntoView({inline:'center'}) moved it off the left edge. */
@@ -80,7 +92,7 @@ assert.ok(app.includes("db.selectedDay=Math.min(100,Math.max(1,next))"),'Day bou
 assert.ok(app.includes("setAttribute('aria-current','date')"),'Selected day should have accessible current state');
 assert.ok(html.includes('gothic.css?v=4'),'Gothic styling missing from page');
 assert.ok(sw.includes("'./gothic.css?v=4'")&&sw.includes("'./gothic-scene.svg'"),'Offline cache missing Gothic art');
-assert.ok(sw.includes("'./app.js?v=4'"),'Offline cache app version not updated');
+assert.ok(sw.includes("'./app.js?v=5'"),'Offline cache app version not updated');
 const crimson=read('gothic.css');
 assert.ok(crimson.includes('.day-arrow')&&crimson.includes('pointer-events:none'),'Gothic navigation style regression');
 assert.ok(read('gothic-scene.svg').includes('<svg'),'Gothic background scene missing');
