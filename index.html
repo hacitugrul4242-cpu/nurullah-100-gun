@@ -8,7 +8,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
 <link rel="apple-touch-icon" href="./icon.svg">
-<link rel="stylesheet" href="./styles.css?v=2">
+<link rel="stylesheet" href="./styles.css?v=3">
 <title>Nurullah | 100 Günlük TYT + AYT</title>
 </head>
 <body>
@@ -54,6 +54,7 @@
   <nav class="tabs" aria-label="Ana bölümler">
     <button class="tab active" data-tab="day" type="button">Günlük Program</button>
     <button class="tab" data-tab="catalog" type="button">Konu Envanteri</button>
+    <button class="tab" data-tab="sources" type="button">Video Kaynakları</button>
     <button class="tab" data-tab="stats" type="button">İlerleme ve Yedekleme</button>
   </nav>
 
@@ -97,6 +98,12 @@
       <div id="catalogBody" class="catalog-body"></div>
     </section>
 
+    <section class="view" id="view-sources" hidden>
+      <div class="section-head"><div><div class="eyebrow">KİŞİSEL DERS KAYNAKLARI</div><h2>Eğitmen ve Video Kaynakları</h2><p>Ders için eğitmen seç; günlük konu kartındaki YouTube bağlantıları bu tercihe göre güncellensin.</p></div></div>
+      <div class="notice resources-note"><strong>Bağlantı türleri farklıdır:</strong> “İlk videoyu aç” doğrulanmış bir video bağlantısıdır. “Kamp listesi” doğrulanmış oynatma listesini açar. “Hocada konuyu ara” ise ilgili eğitmen ve başlıkla YouTube arama sonuçlarına gider; belirli bir videonun doğrulandığı anlamına gelmez. Kaynak tercihin cihazda ve JSON yedeklerinde saklanır.</div>
+      <div id="teacherSettings" class="teacher-settings"></div>
+    </section>
+
     <section class="view" id="view-stats" hidden>
       <div class="section-head"><div><div class="eyebrow">PERFORMANS VE GÜVENLİ KAYIT</div><h2>İlerleme Analizi</h2><p>Ders bazlı tamamlanma ve cihazlar arası aktarım araçları.</p></div></div>
       <div class="workspace">
@@ -133,6 +140,7 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="./curriculum.js?v=1"></script>
 <script src="./plan.js?v=2"></script>
-<script src="./app.js?v=2"></script>
+<script src="./resources.js?v=1"></script>
+<script src="./app.js?v=3"></script>
 </body>
 </html>
