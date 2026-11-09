@@ -4,6 +4,7 @@
   var PLAN=window.NURULLAH_PLAN||[];
   var AUDIT=window.NURULLAH_AUDIT||{};
   var SOURCES=window.NURULLAH_LESSON_SOURCES||{courses:{},verifiedFirstVideos:{},searchLabels:{}};
+  var SUBTOPICS=null,openSubtopicId=null;
   if(PLAN.length!==100){document.body.textContent='Program verileri yüklenemedi.';return;}
   var STORAGE_KEY='nurullah100-app-v1';
   var $=function(id){return document.getElementById(id)};
@@ -20,14 +21,15 @@
   function dateOfDay(day){var x=db.startDate.split('-').map(Number),d=new Date(x[0],x[1]-1,x[2],12);
     d.setDate(d.getDate()+day-1);return d;}
   function dateLabel(day){return dateOfDay(day).toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
-  function newDb(){return {kind:'nurullah100',version:1,startDate:localISO(),selectedDay:1,progress:{},notes:{},ratings:{},instructors:{}};}
+  function newDb(){return {kind:'nurullah100',version:1,startDate:localISO(),selectedDay:1,progress:{},notes:{},ratings:{},instructors:{},subtopicProgress:{}};}
   function load(){try{var old=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
     if(!old||old.kind!=='nurullah100'||old.version!==1)return newDb();
     return Object.assign(newDb(),old,
       {progress:old.progress&&typeof old.progress==='object'?old.progress:{},
        notes:old.notes&&typeof old.notes==='object'?old.notes:{},
        ratings:old.ratings&&typeof old.ratings==='object'?old.ratings:{},
-       instructors:old.instructors&&typeof old.instructors==='object'?old.instructors:{}});
+       instructors:old.instructors&&typeof old.instructors==='object'?old.instructors:{},
+       subtopicProgress:old.subtopicProgress&&typeof old.subtopicProgress==='object'?old.subtopicProgress:{}});
   }catch(e){return newDb()}}
   var db=load();
   if(!validDate(db.startDate))db.startDate=localISO();
@@ -40,9 +42,101 @@
   function done(id){return db.progress[id]===true;}
   function dayStat(day){var t=tasksOf(day);var n=t.filter(function(x){return done(x.id)}).length;
     return {done:n,total:t.length,full:t.length>0&&n===t.length};}
-  var topicTaskIds={};
-  PLAN.forEach(function(p){p.tasks.forEach(function(t){(topicTaskIds[t.topicId]||(topicTaskIds[t.topicId]=[])).push(t.id)})});
+  var topicTaskIds={},topicFirstDay={};
+  PLAN.forEach(function(p){p.tasks.forEach(function(t){
+    (topicTaskIds[t.topicId]||(topicTaskIds[t.topicId]=[])).push(t.id);
+    topicFirstDay[t.topicId]=Math.min(topicFirstDay[t.topicId]||101,p.day);
+  })});
   function topicComplete(id){var ids=topicTaskIds[id]||[];return ids.length>0&&ids.every(done)}
+
+  /* The study inventory is an editorial checklist, not a one-to-one MEB outcome crosswalk. */
+  function subtopicCount(topicId){
+    var a=SUBTOPICS&&SUBTOPICS[topicId]||[];
+    return {done:a.filter(function(_,i){return db.subtopicProgress[topicId+':'+i]===true}).length,total:a.length};
+  }
+  function subtopicTotals(){
+    if(!SUBTOPICS)return {done:0,total:0};
+    var done=0,total=0;
+    Object.keys(SUBTOPICS).forEach(function(id){
+      var n=subtopicCount(id);done+=n.done;total+=n.total;
+    });
+    return {done:done,total:total};
+  }
+  function renderSubtopicSummary(){
+    var el=$('subtopicSummary'),stats=$('subtopicStats');
+    if(!SUBTOPICS){
+      if(el)el.textContent='Alt konu listesi yükleniyor…';
+      if(stats)stats.textContent='Alt konu listesi yükleniyor…';
+      return;
+    }
+    var n=subtopicTotals();
+    var msg=n.done+' / '+n.total+' editoryal alt başlık kontrol edildi';
+    if(el)el.textContent=msg;
+    if(stats)stats.textContent=msg;
+  }
+  function subtopicAllowed(id){
+    return (topicFirstDay[id]||101)<=todayIndex();
+  }
+  function subtopicChecklist(t){
+    var a=SUBTOPICS&&SUBTOPICS[t.id]||[],root=document.createElement('div');
+    root.className='subtopic-panel';
+    var info=document.createElement('p');info.className='subtopic-context';
+    info.textContent='Bu maddeler ayrıntılı çalışma envanterinden alınmıştır; bire bir resmî MEB kazanım kodları değildir.';
+    root.appendChild(info);
+    if(!subtopicAllowed(t.id)){
+      var warn=document.createElement('p');warn.className='subtopic-locked';
+      warn.textContent='Bu konunun ilk çalışma günü henüz gelmedi; kontrol kutuları o tarihte açılır.';
+      root.appendChild(warn);
+    }
+    a.forEach(function(title,i){
+      var key=t.id+':'+i,checked=db.subtopicProgress[key]===true;
+      var row=document.createElement('label');row.className='subtopic-line'+(checked?' checked':'');
+      var input=document.createElement('input');input.type='checkbox';
+      input.checked=checked;input.disabled=!subtopicAllowed(t.id);
+      input.addEventListener('change',function(){
+        if(!subtopicAllowed(t.id)){input.checked=!input.checked;return;}
+        if(input.checked)db.subtopicProgress[key]=true;
+        else delete db.subtopicProgress[key];
+        save();renderCatalog();renderSubtopicSummary();
+      });
+      var name=document.createElement('span');name.textContent=title;
+      row.appendChild(input);row.appendChild(name);root.appendChild(row);
+    });
+    return root;
+  }
+  async function loadSubtopics(){
+    var packed=window.NURULLAH_SUBTOPICS_DEFLATE_B64;
+    try{
+      if(typeof packed!=='string'||typeof DecompressionStream==='undefined'){
+        throw Error('Tarayıcı alt konu arşivini açamıyor.');
+      }
+      var bytes=Uint8Array.from(atob(packed),function(c){return c.charCodeAt(0)});
+      var stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
+      var map=JSON.parse(await new Response(stream).text());
+      var ids=CATALOG.flatMap(function(c){return c.topics.map(function(t){return t.id})});
+      if(Object.keys(map).length!==233||
+         ids.some(function(id){return !Array.isArray(map[id])||!map[id].length})||
+         ids.reduce(function(n,id){return n+map[id].length},0)!==1096){
+        throw Error('Alt konu arşivinin kapsam denetimi başarısız.');
+      }
+      SUBTOPICS=map;renderSubtopicSummary();
+      if(tab==='catalog')renderCatalog();
+    }catch(e){
+      var status=$('subtopicSummary');
+      if(status)status.textContent='Alt konu listesi açılamadı: '+e.message;
+      var stats=$('subtopicStats');
+      if(stats)stats.textContent='Alt konu listesi yüklenemedi.';
+    }
+  }
+  function goToSubtopics(t){
+    tab='catalog';
+    $('courseFilter').value=t.courseId;
+    $('topicSearch').value=t.title;
+    openSubtopicId=t.topicId;
+    render();
+    var target=document.querySelector('[data-subtopic-id="'+t.topicId+'"]');
+    if(target)target.scrollIntoView({block:'nearest'});
+  }
   function globalStat(){
     var total=0,completed=0,days=0,overdue=0,limit=todayIndex();
     PLAN.forEach(function(d){
@@ -156,6 +250,10 @@
         }
         card.appendChild(actions);
       }
+      var go=document.createElement('button');go.type='button';go.className='lesson-link subtopic-go';
+      go.textContent='☑ Alt konuları kontrol et';
+      go.addEventListener('click',function(){goToSubtopics(t)});
+      card.appendChild(go);
     }
     return card;
   }
@@ -246,7 +344,8 @@
     CATALOG.forEach(function(c){
       if(filter!=='all'&&c.id!==filter)return;
       var topics=c.topics.filter(function(t){
-        return !query||(t.title+' '+c.name).toLocaleLowerCase('tr-TR').includes(query);
+        var inSubtopic=SUBTOPICS&&SUBTOPICS[t.id]||[];
+        return !query||(t.title+' '+c.name+' '+inSubtopic.join(' ')).toLocaleLowerCase('tr-TR').includes(query);
       });
       if(!topics.length)return;
       var n=c.topics.filter(function(t){return topicComplete(t.id)}).length;
@@ -256,6 +355,7 @@
         var complete=topicComplete(t.id),ids=topicTaskIds[t.id]||[];
         var doneCount=ids.filter(done).length;
         var row=document.createElement('div');row.className='catalog-topic';
+        row.setAttribute('data-subtopic-id',t.id);
         var info=document.createElement('div');info.className='catalog-topic-info';
         info.innerHTML='<span>'+esc(t.title)+'</span><span class="topic-pill'+(complete?' completed':'')+'">'+
           (complete?'✓ Tamamlandı':doneCount+'/'+ids.length+' oturum')+'</span>';
@@ -268,10 +368,23 @@
           if(direct)resourceLink.title='Doğrulanmış video: '+direct.title;
           row.appendChild(resourceLink);
         }
+        if(SUBTOPICS){
+          var tally=subtopicCount(t.id);
+          var b=document.createElement('button');b.type='button';
+          b.className='subtopic-toggle';
+          b.setAttribute('aria-expanded',String(openSubtopicId===t.id));
+          b.textContent=(openSubtopicId===t.id?'▾':'▸')+' Alt konular ('+tally.done+'/'+tally.total+')';
+          b.addEventListener('click',function(){
+            openSubtopicId=openSubtopicId===t.id?null:t.id;renderCatalog();
+          });
+          row.appendChild(b);
+        }
         box.appendChild(row);
+        if(SUBTOPICS&&openSubtopicId===t.id)box.appendChild(subtopicChecklist(t));
       });target.appendChild(box);
     });
     if(!target.children.length)target.innerHTML='<div class="empty">Aramaya uyan konu bulunamadı.</div>';
+    renderSubtopicSummary();
   }
   function renderSources(){
     var host=$('teacherSettings');if(!host)return;
@@ -329,6 +442,7 @@
         overdue.appendChild(note);
       }
     }
+    renderSubtopicSummary();
     var target=$('subjectStats');target.innerHTML='';
     CATALOG.forEach(function(c){
       var n=c.topics.filter(function(t){return topicComplete(t.id)}).length;
@@ -393,6 +507,12 @@
           var conf=sourceConfig(e[0]);
           if(conf&&conf.options.some(function(o){return o.id===e[1]}))db.instructors[e[0]]=e[1];
         });
+        Object.entries(obj.subtopicProgress||{}).forEach(function(e){
+          var m=/^([a-z]+-[a-z]+-\\d{2}):(\\d{1,2})$/.exec(e[0]);
+          if(!m||e[1]!==true)return;
+          var known=CATALOG.some(function(c){return c.topics.some(function(t){return t.id===m[1]})});
+          if(known&&Number(m[2])<100)db.subtopicProgress[e[0]]=true;
+        });
         save();render();toast('Yedek geri yüklendi.');
       }catch(e){toast(e.message||'Yedek okunamadı.');}finally{this.value='';}
     });
@@ -406,8 +526,8 @@
     });
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installEvent=e;});
     if('serviceWorker' in navigator)window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js?v=5',{updateViaCache:'none'}).catch(function(){});
+      navigator.serviceWorker.register('./sw.js?v=6',{updateViaCache:'none'}).catch(function(){});
     });
   }
-  setup();save();render();
+  setup();save();render();loadSubtopics();
 })();
