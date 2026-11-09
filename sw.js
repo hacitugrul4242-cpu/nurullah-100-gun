@@ -1,6 +1,6 @@
 /* Çevrimdışı kullanım: ağ öncelikli, önbellek yedekli. */
-const CACHE='nurullah100-pwa-v2';
-const CORE=['./','./index.html','./styles.css?v=2','./curriculum.js?v=1','./plan.js?v=2','./app.js?v=2','./manifest.webmanifest','./icon.svg'];
+const CACHE='nurullah100-pwa-v3';
+const CORE=['./','./index.html','./styles.css?v=3','./curriculum.js?v=1','./plan.js?v=2','./resources.js?v=1','./app.js?v=3','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',function(e){self.skipWaiting();e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(CORE)}));});
 self.addEventListener('activate',function(e){
   e.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.filter(function(k){return k!==CACHE}).map(function(k){return caches.delete(k)}) )}).then(function(){return self.clients.claim()}));
