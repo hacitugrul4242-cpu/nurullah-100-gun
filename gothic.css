@@ -159,7 +159,11 @@ input[type=date]{color-scheme:dark}
 }
 .day.done:not(.active){border-color:#729c83;color:#b7ecc8}
 .day.partial:not(.active){border-color:#c69867;color:#f4d8a9}
-.day.future:after{color:#e496a0}
+.day.future:after{
+  content:"";position:absolute;display:block;width:3px;height:3px;bottom:4px;left:50%;
+  transform:translateX(-50%);border-radius:50%;background:#d37e89;line-height:normal;
+}
+.day.future.active:after{background:#ffe1df}
 .day-badge{border-color:#7e3a4a;color:#f9d8d5;background:#251117}
 .notice{background:linear-gradient(90deg,#431a2470,#220f16ce);color:#fbd7cf;border-color:#a83e506f}
 .section-head{padding-top:16px}
@@ -214,3 +218,7 @@ footer{border-color:#4d2b37;color:#ac9196}
  .hero::after{opacity:.45}
 }
 @media(prefers-reduced-motion:reduce){.phase{transition:none}}
+
+/* Gün numarası daima ortalanır; gelecek gün noktası tıklamayı engellemez. */
+.day{display:flex;align-items:center;justify-content:center}
+.day.future::after{pointer-events:none}
