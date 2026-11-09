@@ -1,0 +1,23 @@
+{
+  "name": "Nurullah — 100 Günlük TYT + AYT",
+  "short_name": "Nurullah 100",
+  "description": "Nurullah'ın 100 günlük TYT ve sayısal AYT çalışma takip programı",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090d13",
+  "theme_color": "#090d13",
+  "lang": "tr",
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
