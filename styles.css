@@ -94,3 +94,10 @@ footer{padding-top:28px;margin-top:20px;border-top:1px solid var(--stroke);font-
 @media(max-width:720px){.hero-grid,.workspace{grid-template-columns:1fr}.hero{min-height:unset}.progress-panel{padding:17px}.progress-ring{width:110px;height:110px;margin:8px}.progress-ring:before{inset:9px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.topbar{align-items:flex-start}.install{padding:9px;font-size:10px}.hero h2{font-size:34px}.sidebar{grid-template-columns:1fr}.catalog-tools{flex-direction:column}}
 @media(max-width:430px){.brand h1{font-size:17px}.brand p{font-size:10px}.logo{width:42px;height:42px}.install{max-width:125px}.stat strong{font-size:24px}.tabs .tab{font-size:10px;padding:10px 5px}.section-head{align-items:start}.day-badge{font-size:10px;white-space:nowrap}.hero{padding:22px}.settings{gap:8px}.field{flex:1}.field input,.field select{width:100%}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Teslim sürümü: ilerleme ve gecikme listesi */
+.stats-main{display:grid;gap:13px;align-content:start}
+.overdue-list{display:grid;gap:7px;max-height:350px;overflow-y:auto;scrollbar-width:thin}
+.overdue-item{width:100%;text-align:left;border:1px solid var(--stroke);border-radius:10px;background:#ffffff05;color:var(--text);padding:10px 12px;font-size:11px;line-height:1.5}
+.overdue-item:hover{border-color:var(--mint);background:#64e6c20d}
+@media(max-width:720px){.stats-main{min-width:0}}
