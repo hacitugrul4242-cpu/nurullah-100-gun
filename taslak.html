@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nurullah | 100 Gün - Program Taslağı</title>
+<link rel="stylesheet" href="./styles.css?v=1"><style>
+.draft-alert{padding:13px 16px;border:1px solid #f4c56b66;background:#46391c77;border-radius:13px;color:#ffdc9c;font-size:12px;margin:15px 0}
+.draft-phases{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}.draft-phase{padding:14px;background:#13222a;border:1px solid #2f4652;border-radius:13px;text-align:left;color:#eee;cursor:pointer}
+.draft-phase.active{border-color:#64e6c2}.draft-phase strong{display:block;font-size:11px;color:#64e6c2}.draft-phase b{display:block;font-size:13px;margin:5px 0}.draft-phase small{color:#9caebf}
+.draft-settings{display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:13px}.draft-settings label{display:block;font-size:10px;color:#95a7bb;margin-bottom:4px}
+.draft-settings input,.draft-settings select{background:#1b2834;border:1px solid #334454;color:#f2f6fa;padding:10px;border-radius:10px}
+.draft-days{display:flex;gap:6px;flex-wrap:wrap;margin:17px 0}.draft-days button{border:1px solid #334454;background:#17232f;color:#dce5ef;border-radius:9px;padding:7px 10px;font-size:11px;cursor:pointer}.draft-days .active{background:#64e6c2;color:#08221b}
+.draft-tasks{display:grid;gap:9px}.draft-task{display:flex;gap:9px;align-items:flex-start;border:1px solid #ffffff10;border-radius:10px;background:#ffffff07;padding:10px;font-size:12px}.draft-task input{accent-color:#64e6c2;margin-top:3px}
+.draft-task.done span{text-decoration:line-through;opacity:.55}.draft-task small{display:block;font-size:10px;color:#96a7b8;margin-top:2px}
+.draft-card{padding:16px}.draft-card h3{margin:0 0 12px;font-size:14px}.draft-card p{font-size:11px;color:#96a7b8}
+@media(max-width:650px){.draft-phases{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div class="shell">
+<header class="topbar"><div class="brand"><div class="logo">N</div><div><h1>Nurullah <span>100 Gün</span></h1><p>Yeni konu dağılımı için bağımsız taslak</p></div></div><span class="premiumTag">ÖNİZLEME v0.1</span></header>
+<div class="surface hero"><div class="eyebrow">TYT → AYT → SORU ODAĞI</div><h2>75 günde konu hedefi.<br><em>25 gün soru ve deneme.</em></h2><p>Çalışma programı örneği: TYT ile hızlan, AYT'ye aşamalı geç ve son bölümü öğrenilen konuları kullanmaya ayır. Standart konu adlarıyla takip et.</p><div class="chips"><span>Başlangıç tarihi seçilebilir</span><span>Günlük rutinler</span><span>Örnek ilerleme yüzdesi</span></div></div>
+<div class="draft-alert"><b>Bu bir taslaktır.</b> İlk 15 gün ve önemli geçiş günleri örnek olarak yerleştirildi. Aradaki bütün günler henüz akademik açıdan dağıtılmadı. Canlı uygulamanın planını ve kayıtlarını değiştirmez.</div>
+<div class="draft-phases" id="phases"></div>
+<div class="surface draft-settings"><div><label for="date">Program başlangıç tarihi</label><input id="date" type="date"></div><div><label for="pick">Örnek gün seç</label><select id="pick"></select></div><div class="sample-progress" id="pct"></div></div>
+<div class="draft-days" id="daybuttons"></div>
+<div class="section-head"><div><div class="eyebrow" id="phase"></div><h2 id="dayTitle"></h2><p id="dateTitle"></p></div><div class="day-badge" id="load"></div></div>
+<div class="workspace"><div class="agenda">
+<section class="surface draft-card"><h3 id="mainTitle">Konu Anlatımı ve Pekiştirme</h3><div id="tasks" class="draft-tasks"></div></section>
+<section class="surface draft-card"><h3>Örnek Günlük Hedef</h3><p id="goal"></p></section>
+</div>
+<div class="sidebar">
+<section class="surface draft-card"><h3>Günlük Rutinler</h3><div id="routines" class="draft-tasks"></div><p>Yaver'in rutin adları korunur; kitap okuma ayrıca eklenir. Geometri ve branş denemeleri uygun günlerde açılır.</p></section>
+<section class="surface draft-card"><h3>İş Yükü İlkeleri</h3><p>Genellikle 3–5 ana görev. Zor AYT konularının bulunduğu günlerde daha az yeni konu. Rutinlere ayrılan süre dışında asıl öncelik konu öğrenimi ve pekiştirme.</p><p>75. gün bir hedef; kesin garanti değil. 76–80. günlerde esnek eksik kapatma alanı korunmalı.</p></section>
+</div></div>
+<footer>Nurullah 100 Gün · Taslak önizleme. <a href="./">Mevcut uygulamaya dön</a>. Önizlemedeki işaretlemeler ayrı kaydedilir; gerçek uygulamayı etkilemez.</footer>
+</div>
+<script>
+(function(){
+'use strict';
+var DATA=[{"day":1,"tasks":["TYT Matematik: Temel Kavramlar (1/2)","TYT Türkçe: Sözcükte Anlam","TYT Biyoloji: Canlıların Ortak Özellikleri","TYT Coğrafya: Doğa ve İnsan"]},{"day":2,"tasks":["TYT Matematik: Temel Kavramlar (2/2)","TYT Fizik: Fizik Bilimine Giriş","TYT Kimya: Kimya Bilimi","TYT Türkçe: Cümlede Anlam","TYT Tarih: Tarih ve Zaman"]},{"day":3,"tasks":["TYT Matematik: Sayı Basamakları","TYT Biyoloji: Canlıların Temel Bileşenleri (1/2)","TYT Fizik: Madde ve Özellikleri (1/2)","TYT Coğrafya: Dünya'nın Şekli ve Hareketleri"]},{"day":4,"tasks":["TYT Matematik: Bölme ve Bölünebilme (1/2)","TYT Kimya: Atom ve Periyodik Sistem (1/2)","TYT Türkçe: Paragrafta Anlam (1/2)","TYT Tarih: İnsanlığın İlk Dönemleri"]},{"day":5,"tasks":["TYT Matematik: Bölme ve Bölünebilme (2/2)","TYT Biyoloji: Canlıların Temel Bileşenleri (2/2)","TYT Fizik: Madde ve Özellikleri (2/2)","TYT Geometri: Temel Geometrik Kavramlar (1/2)"]},{"day":6,"tasks":["TYT Matematik: Asal Sayılar ve Çarpanlar","TYT Kimya: Atom ve Periyodik Sistem (2/2)","TYT Türkçe: Paragrafta Anlam (2/2)","TYT Coğrafya: Coğrafi Konum"]},{"day":7,"tasks":["TYT Matematik: EBOB–EKOK (1/2)","TYT Geometri: Temel Geometrik Kavramlar (2/2)","TYT Fizik: Hareket ve Kuvvet (1/2)","TYT Biyoloji: Hücre (1/2)"]},{"day":8,"tasks":["TYT Matematik: EBOB–EKOK (2/2)","TYT Türkçe: Paragrafta Yapı","TYT Kimya: Kimyasal Türler Arası Etkileşimler (1/2)","TYT Tarih: İlk Çağ Uygarlıkları"]},{"day":9,"tasks":["TYT Matematik: Rasyonel Sayılar (1/2)","TYT Fizik: Hareket ve Kuvvet (2/2)","TYT Biyoloji: Hücre (2/2)","TYT Coğrafya: Harita Bilgisi"]},{"day":10,"tasks":["TYT Matematik: Rasyonel Sayılar (2/2)","TYT Geometri: Üçgende Açılar ve Kenarlar (1/3)","TYT Kimya: Kimyasal Türler Arası Etkileşimler (2/2)","TYT Türkçe: Anlatım Biçimleri","TYT Din Kültürü: Bilgi ve İnanç"]},{"day":11,"tasks":["TYT Matematik: Basit Eşitsizlikler (1/2)","TYT Fizik: İş, Güç ve Enerji","TYT Biyoloji: Hücre Zarından Madde Geçişleri","TYT Türkçe: Sözel Mantık"]},{"day":12,"tasks":["TYT Matematik: Basit Eşitsizlikler (2/2)","TYT Geometri: Üçgende Açılar ve Kenarlar (2/3)","TYT Kimya: Maddenin Hâlleri (1/2)","TYT Tarih: Orta Çağ'da Dünya"]},{"day":13,"tasks":["TYT Matematik: Mutlak Değer (1/2)","TYT Fizik: Isı, Sıcaklık ve Genleşme (1/2)","TYT Biyoloji: Canlıların Sınıflandırılması (1/2)","TYT Türkçe: Ses Bilgisi","TYT Coğrafya: Atmosfer ve İklim"]},{"day":14,"tasks":["TYT Matematik: Mutlak Değer (2/2)","TYT Geometri: Üçgende Açılar ve Kenarlar (3/3)","TYT Kimya: Maddenin Hâlleri (2/2)","TYT Türkçe: Yazım Kuralları"]},{"day":15,"tasks":["TYT Matematik: Üslü Sayılar (1/2)","TYT Fizik: Isı, Sıcaklık ve Genleşme (2/2)","TYT Biyoloji: Canlıların Sınıflandırılması (2/2)","TYT Tarih: İlk ve Orta Çağlarda Türk Dünyası"]},{"day":30,"tasks":["TYT Matematik: Problemler: Sayı ve Kesir","TYT Geometri: Dörtgenlere Giriş","TYT Fizik: Elektrik Akımı ve Devreler","TYT Felsefe: Bilgi Felsefesi","AYT Biyoloji: Nükleik Asitler"]},{"day":40,"tasks":["TYT Matematik: Kümeler ve Mantık: Pekiştirme","TYT Türkçe: Cümlenin Ögeleri","TYT Coğrafya: Nüfus ve Göç","AYT Matematik: Fonksiyonlar (İleri)","AYT Kimya: Modern Atom Teorisi"]},{"day":50,"tasks":["TYT Geometri: Çemberde Açılar","AYT Matematik: Polinomlar: Bölme ve Kalan","AYT Fizik: Newton'un Hareket Yasaları","AYT Kimya: Gazlar","AYT Biyoloji: Sinir Sistemi"]},{"day":60,"tasks":["AYT Matematik: Trigonometri","AYT Fizik: Enerji ve Hareket","AYT Kimya: Kimyasal Denge","AYT Biyoloji: Dolaşım Sistemi"]},{"day":70,"tasks":["AYT Matematik: Limit ve Süreklilik","AYT Fizik: Çembersel Hareket","AYT Kimya: Organik Bileşikler","AYT Biyoloji: Fotosentez"]},{"day":75,"tasks":["AYT Matematik: İntegral ve Analitik Geometri: Son Kontrol","AYT Fizik: Modern Fizik: Son Kontrol","AYT Kimya: Organik Kimya: Son Kontrol","AYT Biyoloji: Bitkiler ve Çevre: Son Kontrol"]},{"day":80,"tasks":["Soru: TYT Genel Deneme ve Yanlış Analizi","Soru: AYT Branş Soruları","Tekrar: Eksik Konu Onarımı"]},{"day":90,"tasks":["Soru: AYT Genel Deneme ve Yanlış Analizi","Soru: TYT Süre Yönetimi","Tekrar: Yanlış Defteri"]},{"day":100,"tasks":["Soru: TYT ve AYT Genel Durum Değerlendirmesi","Tekrar: Kalan Bilgi Eksikleri","Rutin: Dinlenme ve Sürdürülebilir Çalışma"]}];
+var $=function(s){return document.getElementById(s)};
+var key='nurullah100-75day-preview-v01';
+var saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+var start=saved.start||iso(new Date()),selected=saved.selected||1,done=saved.done||{};
+function save(){localStorage.setItem(key,JSON.stringify({start:start,selected:selected,done:done}))}
+function phase(day){return day<=25?'TYT TEMEL İNŞASI':day<=45?'TYT + AYT GEÇİŞİ':day<=75?'AYT DERİNLEŞMESİ':'SORU, DENEME VE ONARIM'}
+function routines(day){var arr=['30 dk Paragraf','Problem Rutini','20 dk Kitap Okuma'];if(day>=8&&day<=60)arr.push('Geometri: 2 test');if(day>=16&&day<=45&&day%2===0)arr.push('1 Sayılar Denemesi');if(day>=30&&day%3===0)arr.push('1 Dil Bilgisi Denemesi');if(day>=55&&day%7===0)arr.push('1 TYT Türkçe Branş Denemesi');return arr}
+function dateOf(day){var a=start.split('-').map(Number);var d=new Date(a[0],a[1]-1,a[2],12);d.setDate(d.getDate()+day-1);return d}
+function el(tag,cl,txt){var x=document.createElement(tag);if(cl)x.className=cl;if(txt!==undefined)x.textContent=txt;return x}
+function renderItems(parent,items,day,kind){parent.replaceChildren();items.forEach(function(t,i){var id=day+':'+kind+':'+i;var row=el('label','draft-task'+(done[id]?' done':''));var inp=el('input');inp.type='checkbox';inp.checked=!!done[id];var span=el('span','',t);inp.onchange=function(){if(inp.checked)done[id]=true;else delete done[id];save();render()};row.append(inp,span);parent.appendChild(row)})}
+function progress(){var total=0,n=0;DATA.forEach(function(d){var id=d.day;['main','routine'].forEach(function(type){var items=type==='main'?d.tasks:routines(id);items.forEach(function(t,i){total++;if(done[id+':'+type+':'+i])n++})})});return Math.round(n*100/Math.max(1,total))}
+function render(){
+  var d=DATA.find(function(x){return x.day===Number(selected)})||DATA[0];selected=d.day;
+  $('date').value=start;$('pick').value=selected;$('phase').textContent=phase(selected);
+  $('dayTitle').textContent=selected+'. Gün — Örnek';$('dateTitle').textContent=dateOf(selected).toLocaleDateString('tr-TR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  $('load').textContent=d.tasks.length+' ana görev';$('mainTitle').textContent=selected>75?'Soru / Deneme / Onarım':'TYT ve AYT Konu Çalışmaları';
+  $('goal').textContent=selected<=25?'TYT temel konularına öncelik ver; video başlığının alt kazanımlarını uygulamayla kapat.':selected<=45?'TYT açıklarını kapatırken AYT ön koşullarını kur.':selected<=75?'AYT derslerinin ana konularını ilerlet, TYT rutinlerini bırakma.':'Tam deneme, soru analizi ve toparlanmaya odaklan.';
+  $('pct').textContent='Örnek ilerleme: %'+progress();
+  renderItems($('tasks'),d.tasks,selected,'main');
+  renderItems($('routines'),routines(selected),selected,'routine');
+  $('daybuttons').replaceChildren();DATA.forEach(function(x){var b=el('button',x.day===selected?'active':'',x.day+'. gün');b.onclick=function(){selected=x.day;save();render()};$('daybuttons').appendChild(b)});
+  $('phases').replaceChildren();[[1,25,'TYT Temeli'],[26,45,'TYT + AYT'],[46,75,'AYT Ana Konular'],[76,100,'Soru ve Deneme']].forEach(function(p,i){var b=el('button','draft-phase'+(selected>=p[0]&&selected<=p[1]?' active':''));b.append(el('strong','','FAZ '+(i+1)+' · '+p[0]+'–'+p[1]),el('b','',p[2]),el('small','','Dağılım hedefi'));b.onclick=function(){var x=DATA.find(function(d){return d.day>=p[0]&&d.day<=p[1]});if(x){selected=x.day;save();render()}};$('phases').appendChild(b)})
+}
+DATA.forEach(function(d){var o=el('option','',d.day+'. gün');o.value=d.day;$('pick').appendChild(o)});
+$('pick').onchange=function(){selected=Number(this.value);save();render()};
+$('date').onchange=function(){if(this.value){start=this.value;save();render()}};
+render();
+})();
+</script></body></html>
