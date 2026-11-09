@@ -236,3 +236,33 @@ footer{border-color:#4d2b37;color:#ac9196}
 .subtopic-line input:disabled{cursor:not-allowed}
 .subtopic-go{margin:9px 0 1px 28px;cursor:pointer}
 @media(max-width:550px){.subtopic-panel{padding:9px}.subtopic-toggle{margin-left:0}.subtopic-go{margin-left:0}}
+
+/* Günlük programın altındaki geçmiş gün görevlerinin ayrı dökümü */
+.daily-backlog{margin-top:18px;padding:20px;border-color:#a74759;background:linear-gradient(150deg,#29111b,#140c12 82%)}
+.daily-backlog[hidden]{display:none!important}
+.daily-backlog-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.daily-backlog-top h3{font:700 24px Georgia,'Times New Roman',serif;color:#ffebea;margin:3px 0 0}
+.daily-backlog-count{color:#ffe4df;background:#74243a;border:1px solid #ae5164;border-radius:999px;padding:8px 13px;font-weight:700;font-size:12px}
+.daily-backlog-list{display:grid;gap:10px;margin-top:14px}
+.backlog-empty{margin:0;padding:14px;border-radius:10px;color:#ddb9c1;background:#411b2966}
+.backlog-day{border:1px solid #774051;border-radius:11px;overflow:hidden;background:#1b1018}
+.backlog-day[open]{border-color:#a64f64}
+.backlog-heading{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 15px;color:#f5dbdd;font-weight:650;font-size:13px}
+.backlog-heading:hover{background:#63203655}
+.backlog-heading strong{color:#f19ca8;white-space:nowrap;font-size:11px}
+.backlog-tasks{border-top:1px solid #7332486e;padding:4px 13px 12px}
+.backlog-task{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;border-bottom:1px solid #66334355;cursor:pointer;color:#f2e1e2}
+.backlog-task:hover{background:#88314813}
+.backlog-task input{accent-color:#ed6071;flex:none;width:17px;height:17px;margin:2px 0 0;cursor:pointer}
+.backlog-task-label{display:grid;gap:3px;font-size:12px;line-height:1.5;min-width:0}
+.backlog-task-label small{color:#b99aa7;font-size:10px}
+.backlog-day-actions{padding-top:10px;display:flex;justify-content:flex-end}
+.backlog-day-link{border:1px solid #914356;background:#4b1c2c;color:#ffe7e4;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer}
+.backlog-day-link:hover,.backlog-day-link:focus-visible{background:#762539;border-color:#e77a8a}
+@media(max-width:560px){
+  .daily-backlog{padding:14px}
+  .daily-backlog-top h3{font-size:20px}
+  .backlog-heading{padding:12px 10px;gap:8px;font-size:12px}
+  .backlog-heading strong{font-size:10px}
+  .backlog-tasks{padding:4px 9px 10px}
+}
