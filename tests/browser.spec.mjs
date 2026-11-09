@@ -220,3 +220,55 @@ test('Subtopic checks survive JSON export/import without changing main completio
   if(await toggle.getAttribute('aria-expanded')!=='true')await toggle.click();
   await expect(page.locator('.subtopic-line input').first()).toBeChecked();
 });
+
+
+test('Day 3 separately lists all unfinished tasks from days 1 and 2',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,-2));
+  await dayButton(page,1).click();
+  await expect(page.locator('#dailyBacklog')).toBeHidden();
+  await dayButton(page,2).click();
+  await expect(page.locator('#dailyBacklogList .backlog-day')).toHaveCount(1);
+  await dayButton(page,3).click();
+  await assertDay(page,3);
+  const count=await page.evaluate(()=>{
+    return window.NURULLAH_PLAN.slice(0,2).reduce((sum,d)=>sum+d.tasks.length+d.routines.length+d.checks.length,0);
+  });
+  await expect(page.locator('#dailyBacklogCount')).toHaveText(count+' eksik görev');
+  await expect(page.locator('#dailyBacklogList .backlog-day')).toHaveCount(2);
+  await expect(page.locator('#dailyBacklogList .backlog-day').nth(0).locator('summary')).toContainText('1. Gün');
+  await expect(page.locator('#dailyBacklogList .backlog-day').nth(1).locator('summary')).toContainText('2. Gün');
+  await expect(page.locator('#dailyBacklogList .backlog-task')).toHaveCount(count);
+  await expect(page.locator('#dayBadge')).toContainText('0 /');
+});
+
+test('Completing a prior-day task from Day 3 removes it and updates its original day',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,-2));
+  await dayButton(page,3).click();
+  const original=await page.evaluate(()=>window.NURULLAH_PLAN[0].tasks[0].id);
+  const currentBadge=await page.locator('#dayBadge').textContent();
+  const total=await page.locator('#dailyBacklogList .backlog-task').count();
+  await page.locator('#dailyBacklogList .backlog-day').first().locator('.backlog-task input').first().check();
+  await expect(page.locator('#dailyBacklogList .backlog-task')).toHaveCount(total-1);
+  await expect(page.locator('#dayBadge')).toHaveText(currentBadge);
+  const stored=await page.evaluate(id=>JSON.parse(localStorage.getItem('nurullah100-app-v1')).progress[id],original);
+  expect(stored).toBe(true);
+  await dayButton(page,1).click();
+  await expect(page.locator('#agenda input[type="checkbox"]').first()).toBeChecked();
+  await dayButton(page,3).click();
+  await page.reload();
+  await assertDay(page,3);
+  await expect(page.locator('#dailyBacklogList .backlog-task')).toHaveCount(total-1);
+});
+
+test('Backlog never counts future dates as missing',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,1));
+  await dayButton(page,3).click();
+  await expect(page.locator('#dailyBacklogCount')).toHaveText('0 eksik görev');
+  await expect(page.locator('#dailyBacklogList .backlog-task')).toHaveCount(0);
+  await expect(page.locator('#dailyBacklogHint')).toContainText('Gelecekteki görevler');
+  await setStart(page,await shiftLocalDate(page,-1));
+  await dayButton(page,3).click();
+  const day1=await page.evaluate(()=>{const d=window.NURULLAH_PLAN[0];return d.tasks.length+d.routines.length+d.checks.length});
+  await expect(page.locator('#dailyBacklogCount')).toHaveText(day1+' eksik görev');
+  await expect(page.locator('#dailyBacklogList .backlog-day')).toHaveCount(1);
+});
