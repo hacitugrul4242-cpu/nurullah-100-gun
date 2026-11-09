@@ -34,7 +34,7 @@
   var db=load();
   if(!validDate(db.startDate))db.startDate=localISO();
   if(!Number.isInteger(db.selectedDay)||db.selectedDay<1||db.selectedDay>100)db.selectedDay=Math.max(1,todayIndex());
-  var tab='day', installEvent=null, toastTimer=null;
+  var tab='day', installEvent=null, toastTimer=null, backlogOpenDays={};
   function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(db))}catch(e){toast('Kaydedilemedi. Tarayıcı depolamasını kontrol et.');}}
   function toast(s){var el=$('toast');el.textContent=s;el.classList.add('show');
     clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show')},3400);}
@@ -269,6 +269,77 @@
     if(!items.length){target.innerHTML='<div class="empty">Bugün ek kontrol görevi yok.</div>';return;}
     items.forEach(function(t){target.appendChild(createTask(t,day))});
   }
+  /* Önceki günlerden kalmış ve tarihi gelmiş görevler.
+     Orijinal görev kimliği kullanılır: günlük toplamlar veya ilerleme iki kez sayılmaz. */
+  function overdueForSelectedDay(day){
+    var upper=Math.min(day,todayIndex());
+    var groups=[];
+    for(var sourceDay=1;sourceDay<upper;sourceDay++){
+      var pending=tasksOf(sourceDay).filter(function(t){return !done(t.id)});
+      if(pending.length)groups.push({day:sourceDay,tasks:pending});
+    }
+    return groups;
+  }
+  function renderDailyBacklog(selectedDay){
+    var panel=$('dailyBacklog'),list=$('dailyBacklogList'),count=$('dailyBacklogCount');
+    panel.hidden=selectedDay===1;
+    if(panel.hidden)return;
+    list.replaceChildren();
+    var groups=overdueForSelectedDay(selectedDay);
+    var total=groups.reduce(function(n,g){return n+g.tasks.length},0);
+    count.textContent=total+' eksik görev';
+    if(!total){
+      var empty=document.createElement('p');
+      empty.className='backlog-empty';
+      empty.textContent='Önceki günlerden eksik görev bulunmuyor.';
+      list.appendChild(empty);
+    }
+    groups.forEach(function(group,i){
+      var wrapper=document.createElement('details');
+      wrapper.className='backlog-day';
+      var defaultOpen=i>=groups.length-2;
+      wrapper.open=Object.prototype.hasOwnProperty.call(backlogOpenDays,group.day)?
+        backlogOpenDays[group.day]:defaultOpen;
+      wrapper.addEventListener('toggle',function(){backlogOpenDays[group.day]=wrapper.open});
+      var heading=document.createElement('summary');
+      heading.className='backlog-heading';
+      var label=document.createElement('span');
+      label.textContent=group.day+'. Gün · '+dateLabel(group.day);
+      var amount=document.createElement('strong');
+      amount.textContent=group.tasks.length+' eksik';
+      heading.appendChild(label);heading.appendChild(amount);
+      wrapper.appendChild(heading);
+      var tasks=document.createElement('div');tasks.className='backlog-tasks';
+      group.tasks.forEach(function(t){
+        var row=document.createElement('label');row.className='backlog-task';
+        var input=document.createElement('input');input.type='checkbox';
+        input.checked=false;input.disabled=group.day>todayIndex();
+        input.setAttribute('aria-label',group.day+'. gün: '+t.label+' tamamlandı');
+        input.addEventListener('change',function(){
+          backlogOpenDays[group.day]=true;
+          toggle(t.id,group.day,input.checked);
+        });
+        var body=document.createElement('span');body.className='backlog-task-label';
+        var name=document.createElement('span');name.textContent=t.label;
+        var meta=document.createElement('small');
+        meta.textContent=t.course?(t.exam+' · '+t.course):'Günlük rutin / tekrar';
+        body.appendChild(name);body.appendChild(meta);
+        row.appendChild(input);row.appendChild(body);tasks.appendChild(row);
+      });
+      var actions=document.createElement('div');actions.className='backlog-day-actions';
+      var go=document.createElement('button');go.type='button';go.className='backlog-day-link';
+      go.textContent=group.day+'. güne git';
+      go.addEventListener('click',function(){selectDay(group.day)});
+      actions.appendChild(go);
+      tasks.appendChild(actions);
+      wrapper.appendChild(tasks);
+      list.appendChild(wrapper);
+    });
+    var note=$('dailyBacklogHint');
+    note.textContent=selectedDay>todayIndex()?
+      'Gelecekteki görevler eksik sayılmaz; yalnızca tarihi geçmiş görevler gösterilir.':
+      'Görevleri buradan tamamlayabilir veya ait oldukları güne dönebilirsin. Bugünün görevleri tekrar sayılmaz.';
+  }
   function renderDay(){
     var p=PLAN[db.selectedDay-1],day=p.day,allowed=day<=todayIndex(),stats=dayStat(day);
     $('currentTitle').textContent=day+'. Gün';
@@ -337,6 +408,7 @@
       b.addEventListener('click',function(){db.ratings[day]=n;save();renderDay()});ratings.appendChild(b);
     })(i);}
     $('dayNote').value=db.notes[day]||'';$('dayNote').disabled=!allowed;
+    renderDailyBacklog(day);
   }
   function renderCatalog(){
     var filter=$('courseFilter').value,query=$('topicSearch').value.toLocaleLowerCase('tr-TR').trim();
@@ -526,7 +598,7 @@
     });
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installEvent=e;});
     if('serviceWorker' in navigator)window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js?v=6',{updateViaCache:'none'}).catch(function(){});
+      navigator.serviceWorker.register('./sw.js?v=7',{updateViaCache:'none'}).catch(function(){});
     });
   }
   setup();save();render();loadSubtopics();
