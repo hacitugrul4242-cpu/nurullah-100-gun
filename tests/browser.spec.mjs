@@ -296,7 +296,7 @@ test('Sage / Slate focus theme is light, legible, and keeps day selection clear'
   expect(state.selectedDay).toBe('rgb(225, 239, 229)');
   expect(state.before).toBe('none');
   expect(state.theme).toBe('#F4F6F5');
-  expect(state.sheet).toContain('focus.css?v=1');
+  expect(state.sheet).toContain('focus.css?v=2');
   expect(state.sheet).not.toContain('gothic.css');
   await dayButton(page,1).click();
   await assertDay(page,1);
@@ -304,6 +304,9 @@ test('Sage / Slate focus theme is light, legible, and keeps day selection clear'
   await assertDay(page,2);
   await page.locator('#dayPrev').click();
   await assertDay(page,1);
+  await setStart(page,await shiftLocalDate(page,1));
+  await dayButton(page,1).click();
+  await expect(page.locator('#dayStrip .day.active')).toHaveCSS('background-color','rgb(225, 239, 229)');
 });
 
 test('Missing tasks use soft amber and no horizontal page overflow on desktop or phone',async ({page})=>{
