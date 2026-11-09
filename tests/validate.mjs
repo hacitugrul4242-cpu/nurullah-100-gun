@@ -63,10 +63,28 @@ for(const [topicId,v] of Object.entries(resources.verifiedFirstVideos)){
   assert.ok(v.title);
 }
 const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
-for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','app.js?v=3']){
+for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','app.js?v=4']){
   assert.ok(html.includes(x),'Missing HTML script '+x);
   assert.ok(sw.includes('./'+x),'Missing offline asset '+x);
 }
+
+/* Regression: day 1 must stay reachable after selecting day 2.
+   The old scrollIntoView({inline:'center'}) moved it off the left edge. */
+assert.ok(html.includes('id="dayPrev"')&&html.includes('id="dayNext"'),'Missing sequential day controls');
+assert.ok(html.includes('id="dayStrip"'),'Missing day strip');
+assert.ok(app.includes("strip.scrollLeft=day<=3?0:"),'Day 1/2/3 are no longer anchored left');
+assert.ok(!app.includes("selected.scrollIntoView("),'Old day navigation scroll regression reintroduced');
+assert.ok(app.includes("stepDay(-1)")&&app.includes("stepDay(1)"),'Previous/next button handlers missing');
+assert.ok(app.includes("e.key==='ArrowLeft'")&&app.includes("e.key==='ArrowRight'"),'Keyboard navigation missing');
+assert.ok(app.includes("db.selectedDay=Math.min(100,Math.max(1,next))"),'Day bounds not enforced');
+assert.ok(app.includes("setAttribute('aria-current','date')"),'Selected day should have accessible current state');
+assert.ok(html.includes('gothic.css?v=4'),'Gothic styling missing from page');
+assert.ok(sw.includes("'./gothic.css?v=4'")&&sw.includes("'./gothic-scene.svg'"),'Offline cache missing Gothic art');
+assert.ok(sw.includes("'./app.js?v=4'"),'Offline cache app version not updated');
+const crimson=read('gothic.css');
+assert.ok(crimson.includes('.day-arrow')&&crimson.includes('pointer-events:none'),'Gothic navigation style regression');
+assert.ok(read('gothic-scene.svg').includes('<svg'),'Gothic background scene missing');
+
 for(const x of ['view-sources','teacherSettings','view-day','view-catalog','view-stats'])assert.ok(html.includes('id="'+x+'"'));
 for(const x of ['selectedSource','topicQuery','matchedVideo','renderSources','instructors:'])assert.ok(app.includes(x));
 
