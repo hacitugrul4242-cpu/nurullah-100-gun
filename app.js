@@ -598,7 +598,7 @@
     });
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installEvent=e;});
     if('serviceWorker' in navigator)window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js?v=8',{updateViaCache:'none'}).catch(function(){});
+      navigator.serviceWorker.register('./sw.js?v=9',{updateViaCache:'none'}).catch(function(){});
     });
   }
   setup();save();render();loadSubtopics();
