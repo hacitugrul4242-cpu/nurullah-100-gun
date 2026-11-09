@@ -222,3 +222,17 @@ footer{border-color:#4d2b37;color:#ac9196}
 /* Gün numarası daima ortalanır; gelecek gün noktası tıklamayı engellemez. */
 .day{display:flex;align-items:center;justify-content:center}
 .day.future::after{pointer-events:none}
+
+/* Ayrıntılı alt konu kontrolü — editoryal 1.096 başlık */
+.subtopic-summary{border:1px solid #8d4050;border-radius:11px;background:#491c2a55;color:#f4d2d2;padding:11px 14px;font-size:12px;font-weight:700;margin:5px 0 14px}
+.subtopic-toggle{margin-left:6px;border:1px solid #8e4153;border-radius:9px;background:#451a2c;color:#ffe1e0;padding:7px 9px;font-size:11px;cursor:pointer;font-weight:700}
+.subtopic-toggle:hover,.subtopic-toggle:focus-visible{border-color:#ef7d8b;background:#752439}
+.subtopic-panel{margin:6px 0 14px;border:1px solid #75394a;border-radius:11px;background:#100a0ef5;padding:12px}
+.subtopic-context{margin:0 0 12px;font-size:11px;color:#c7a7ae;line-height:1.6}
+.subtopic-locked{padding:9px;border:1px solid #855a4a;border-radius:9px;color:#f5c5af;font-size:11px}
+.subtopic-line{display:flex;align-items:start;gap:10px;padding:9px 4px;border-top:1px solid #65313f33;cursor:pointer;color:#f0dde1;font-size:12px;line-height:1.5}
+.subtopic-line input{accent-color:#d8455d;margin:2px 0 0;width:16px;height:16px;flex:0 0 16px;cursor:pointer}
+.subtopic-line.checked span{text-decoration:line-through;opacity:.62}
+.subtopic-line input:disabled{cursor:not-allowed}
+.subtopic-go{margin:9px 0 1px 28px;cursor:pointer}
+@media(max-width:550px){.subtopic-panel{padding:9px}.subtopic-toggle{margin-left:0}.subtopic-go{margin-left:0}}
