@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080d13">
+<meta name="description" content="Nurullah için 100 günlük TYT + AYT sayısal konu öğrenme ve ilerleme takip programı">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon.svg">
+<link rel="stylesheet" href="./styles.css?v=1">
+<title>Nurullah | 100 Günlük TYT + AYT</title>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand"><div class="logo">N</div><div>
+      <h1>Nurullah <span>100 Gün</span></h1>
+      <p>TYT + AYT · Sayısal çalışma takip merkezi</p>
+    </div></div>
+    <button class="outline install" id="installBtn" type="button" title="Uygulama olarak yükle">⌄ Uygulamayı yükle</button>
+  </header>
+
+  <section class="hero-grid">
+    <div class="surface hero">
+      <div class="eyebrow">100 GÜNLÜK AKADEMİK YOL HARİTASI</div>
+      <h2>Konu temelini kur.<br><em>İlerlemeni ölç.</em></h2>
+      <p>Genel YKS konu adlarıyla sade günlük çalışma; ayrıntılı kazanımlar için ayrı envanter. Bu plan Yusuf'un telafi programından bağımsız oluşturulmuştur.</p>
+      <div class="chips">
+        <span>TYT + Sayısal AYT</span><span>100 gün</span><span>Yaklaşık 7 saat/gün hedefi</span>
+      </div>
+    </div>
+    <div class="surface progress-panel">
+      <div class="eyebrow">GENEL İLERLEME</div>
+      <div class="progress-ring" id="progressRing"><div><strong id="progressPct">0%</strong><small>Görev ilerlemesi</small></div></div>
+      <div class="progress-caption" id="progressText">0 görev tamamlandı</div>
+    </div>
+  </section>
+
+  <section class="stat-grid" aria-label="Program göstergeleri">
+    <div class="surface stat"><small>TAMAMLANAN GÜN</small><strong id="statDays">0 <span>/ 100</span></strong></div>
+    <div class="surface stat"><small>PROGRAMLANAN ANA KONU</small><strong id="statTopics">233</strong></div>
+    <div class="surface stat"><small>ÖĞRENİLEN ANA KONU</small><strong id="statLearned">0</strong></div>
+    <div class="surface stat"><small>GECİKEN GÖREV</small><strong id="statOverdue">0</strong></div>
+  </section>
+
+  <div class="phase-grid" id="phases" aria-label="Çalışma aşamaları"></div>
+  <section class="surface settings">
+    <div class="field"><label for="startDate">Başlangıç tarihi</label><input id="startDate" type="date"></div>
+    <div class="field"><label for="jumpDay">Program günü</label><select id="jumpDay"></select></div>
+    <button type="button" class="outline" id="todayBtn">Bugüne git</button>
+    <div class="setting-hint">Tarihler cihazının yerel takvimine göre işler. Gelecek günlerde görev işaretlenmez.</div>
+  </section>
+  <nav class="tabs" aria-label="Ana bölümler">
+    <button class="tab active" data-tab="day" type="button">Günlük Program</button>
+    <button class="tab" data-tab="catalog" type="button">Konu Envanteri</button>
+    <button class="tab" data-tab="stats" type="button">İlerleme ve Yedekleme</button>
+  </nav>
+
+  <main>
+    <section class="view" id="view-day">
+      <div class="day-strip" id="dayStrip" aria-label="Gün seçimi"></div>
+      <div class="section-head">
+        <div><div class="eyebrow" id="currentPhase">FAZ</div><h2 id="currentTitle">1. Gün</h2><p id="currentDate"></p></div>
+        <div class="day-badge" id="dayBadge">0/0 tamamlandı</div>
+      </div>
+      <div class="notice" id="lockNotice" hidden></div>
+      <div class="workspace">
+        <div id="agenda" class="agenda"></div>
+        <div class="sidebar">
+          <section class="surface side-panel">
+            <div class="panel-head"><h3>Günlük Rutinler</h3><span id="routineCount"></span></div>
+            <div id="routines" class="task-list"></div>
+          </section>
+          <section class="surface side-panel">
+            <div class="panel-head"><h3>Tekrar ve Kontrol</h3><span id="checkCount"></span></div>
+            <div id="checks" class="task-list"></div>
+          </section>
+          <section class="surface side-panel">
+            <div class="panel-head"><h3>Gün Sonu Değerlendirmesi</h3></div>
+            <label class="minor-label" for="dayRating">Öz değerlendirme (1–5)</label>
+            <div class="rating" id="rating"></div>
+            <label class="minor-label" for="dayNote">Öğrendiklerim, zorlandıklarım, yarına aktarılacaklar</label>
+            <textarea id="dayNote" rows="5" placeholder="Kısa bir değerlendirme yaz..."></textarea>
+            <p class="aside-hint">Değişiklikler bu cihazda saklanır. Yedeklemeyi ihmal etme.</p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-catalog" hidden>
+      <div class="section-head"><div><div class="eyebrow">TÜM DERSLER</div><h2>Konu Envanteri</h2><p>Her standart konu başlığı programda en az bir kez planlanmıştır.</p></div></div>
+      <div class="catalog-tools">
+        <select id="courseFilter" aria-label="Ders filtrele"><option value="all">Bütün dersler</option></select>
+        <input type="search" id="topicSearch" placeholder="Konu veya ders ara..." aria-label="Konu ara">
+      </div>
+      <div id="catalogBody" class="catalog-body"></div>
+    </section>
+
+    <section class="view" id="view-stats" hidden>
+      <div class="section-head"><div><div class="eyebrow">PERFORMANS VE GÜVENLİ KAYIT</div><h2>İlerleme Analizi</h2><p>Ders bazlı tamamlanma ve cihazlar arası aktarım araçları.</p></div></div>
+      <div class="workspace">
+        <div class="surface side-panel"><h3>Ders ilerlemesi</h3><div id="subjectStats" class="subject-stats"></div></div>
+        <div class="sidebar">
+          <section class="surface side-panel">
+            <h3>Veri Yedekleme</h3>
+            <p class="aside-hint">Kayıtlar tarayıcıda tutulur; başka cihazla otomatik eşitlenmez.</p>
+            <button type="button" id="exportBtn" class="primary full">JSON yedeği indir</button>
+            <label for="importFile" class="outline file-label">JSON yedeğini geri yükle</label>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
+          </section>
+          <section class="surface side-panel danger-zone">
+            <h3>Kayıtları sıfırla</h3>
+            <p class="aside-hint">Sadece Nurullah programının cihazdaki ilerleme kayıtları silinir.</p>
+            <button type="button" id="resetBtn" class="danger-btn">İlerlemeyi sıfırla</button>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <strong>Nurullah • 100 Gün</strong> — Çalışma planı, MEB 2026 kazanımlarına dayalı 2027 hazırlık taslağıdır.
+    Konu listesi tek başına resmî 2027 ÖSYM kapsamı veya sınava tam hazır olma garantisi değildir.
+  </footer>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="./curriculum.js?v=1"></script>
+<script src="./plan.js?v=1"></script>
+<script src="./app.js?v=1"></script>
+</body>
+</html>
