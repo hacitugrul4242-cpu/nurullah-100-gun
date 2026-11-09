@@ -58,7 +58,13 @@
     save();render();
   }
   function selectDay(day){
-    db.selectedDay=Math.min(100,Math.max(1,Number(day)||1));save();render();
+    var next=Number(day);
+    if(!Number.isInteger(next))return;
+    db.selectedDay=Math.min(100,Math.max(1,next));
+    save();render();
+  }
+  function stepDay(delta){
+    selectDay(db.selectedDay+delta);
   }
   function renderHeader(){
     var g=globalStat();
@@ -178,10 +184,39 @@
       var btn=document.createElement('button'),s=dayStat(d.day);
       btn.type='button';btn.textContent=d.day;btn.title=dateLabel(d.day);
       btn.className='day'+(d.day===day?' active':'')+(s.full?' done':s.done?' partial':'')+(d.day>todayIndex()?' future':'');
-      btn.setAttribute('aria-label',d.day+'. gün');btn.setAttribute('aria-pressed',String(d.day===day));
-      btn.addEventListener('click',function(){selectDay(d.day)});strip.appendChild(btn);
+      btn.setAttribute('aria-label',d.day+'. gün · '+dateLabel(d.day));
+      btn.setAttribute('aria-pressed',String(d.day===day));
+      if(d.day===day)btn.setAttribute('aria-current','date');
+      btn.addEventListener('click',function(){selectDay(d.day)});
+      btn.addEventListener('keydown',function(e){
+        if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+          e.preventDefault();
+          var next=Math.max(1,Math.min(100,d.day+(e.key==='ArrowRight'?1:-1)));
+          selectDay(next);
+          var focused=strip.children[next-1];
+          if(focused)focused.focus({preventScroll:true});
+        }
+        if(e.key==='Home'||e.key==='End'){
+          e.preventDefault();
+          var edge=e.key==='Home'?1:100;selectDay(edge);
+          var target=strip.children[edge-1];
+          if(target)target.focus({preventScroll:true});
+        }
+      });
+      strip.appendChild(btn);
     });
-    var selected=strip.children[day-1];if(selected)selected.scrollIntoView({inline:'center',block:'nearest'});
+    /* scrollIntoView({inline:'center'}) 1. günü sola taşır ve tıklanmasını zorlaştırır.
+       Gün 1–3 için kesinlikle sol kenara sabitle; diğerlerini yatay şerit içinde ortala.
+       Dış sayfanın dikey kaydırma konumuna dokunma. */
+    var selected=strip.children[day-1];
+    if(selected){
+      var center=selected.offsetLeft-strip.offsetLeft-(strip.clientWidth-selected.offsetWidth)/2;
+      strip.scrollLeft=day<=3?0:Math.max(0,center);
+    }
+    $('dayPrev').disabled=day===1;
+    $('dayNext').disabled=day===100;
+    $('dayPrev').setAttribute('aria-label',Math.max(1,day-1)+'. güne dön');
+    $('dayNext').setAttribute('aria-label',Math.min(100,day+1)+'. güne ilerle');
     var a=$('agenda');a.innerHTML='';
     if(day<=75){
       var tyt=p.tasks.filter(function(t){return t.exam==='TYT'});
@@ -318,6 +353,8 @@
     var courseFilter=$('courseFilter');CATALOG.forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.name;courseFilter.appendChild(o)});
     sel.addEventListener('change',function(){selectDay(this.value)});
     $('todayBtn').addEventListener('click',today);
+    $('dayPrev').addEventListener('click',function(){stepDay(-1)});
+    $('dayNext').addEventListener('click',function(){stepDay(1)});
     $('startDate').addEventListener('change',function(){
       if(!validDate(this.value)){toast('Geçerli bir tarih seç.');this.value=db.startDate;return;}
       if(Object.keys(db.progress).length&&
@@ -369,7 +406,7 @@
     });
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installEvent=e;});
     if('serviceWorker' in navigator)window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js?v=3',{updateViaCache:'none'}).catch(function(){});
+      navigator.serviceWorker.register('./sw.js?v=4',{updateViaCache:'none'}).catch(function(){});
     });
   }
   setup();save();render();
