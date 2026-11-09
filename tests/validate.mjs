@@ -73,7 +73,7 @@ for(const [topicId,v] of Object.entries(resources.verifiedFirstVideos)){
   assert.ok(v.title);
 }
 const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
-for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','subtopics-data.js?v=1','app.js?v=7']){
+for(const x of ['curriculum.js?v=1','plan.js?v=2','resources.js?v=1','subtopics-data.js?v=1','app.js?v=8']){
   assert.ok(html.includes(x),'Missing HTML script '+x);
   assert.ok(sw.includes('./'+x),'Missing offline asset '+x);
 }
@@ -100,9 +100,9 @@ assert.ok(app.includes("stepDay(-1)")&&app.includes("stepDay(1)"),'Previous/next
 assert.ok(app.includes("e.key==='ArrowLeft'")&&app.includes("e.key==='ArrowRight'"),'Keyboard navigation missing');
 assert.ok(app.includes("db.selectedDay=Math.min(100,Math.max(1,next))"),'Day bounds not enforced');
 assert.ok(app.includes("setAttribute('aria-current','date')"),'Selected day should have accessible current state');
-assert.ok(html.includes('gothic.css?v=6'),'Gothic styling missing from page');
-assert.ok(sw.includes("'./gothic.css?v=6'")&&sw.includes("'./gothic-scene.svg'"),'Offline cache missing Gothic art');
-assert.ok(sw.includes("'./app.js?v=7'"),'Offline cache app version not updated');
+assert.ok(html.includes('focus.css?v=1'),'Sage / Slate theme missing from page');
+assert.ok(sw.includes("'./focus.css?v=1'"),'Offline cache missing Sage / Slate theme');
+assert.ok(sw.includes("'./app.js?v=8'"),'Offline cache app version not updated');
 assert.ok(app.includes('loadSubtopics()')&&app.includes('subtopicProgress:'),'Subtopic progress must remain persistent');
 assert.ok(html.includes('id="subtopicSummary"')&&html.includes('id="subtopicStats"'),'Subtopic controls missing');
 assert.ok(sw.includes("'./subtopics-data.js?v=1'"),'Subtopic archive missing from offline cache');
@@ -111,10 +111,19 @@ assert.ok(app.includes('function overdueForSelectedDay(day)'),'Overdue day looku
 assert.ok(app.includes('Math.min(day,todayIndex())'),'Overdue tasks must respect both selected and actual day');
 assert.ok(app.includes('toggle(t.id,group.day,input.checked)'),'Backlog must use original task ID and original day');
 assert.ok(app.includes('renderDailyBacklog(day)'),'Daily missing tasks not rendered');
-const crimson=read('gothic.css');
-assert.ok(crimson.includes('.day-arrow')&&crimson.includes('pointer-events:none'),'Gothic navigation style regression');
-assert.ok(read('gothic-scene.svg').includes('<svg'),'Gothic background scene missing');
+const focus=read('focus.css');
+assert.ok(focus.includes('.day-arrow')&&focus.includes('pointer-events:none'),'Sage / Slate navigation style regression');
+assert.ok(focus.includes('--primary:#547e6d')&&focus.includes('--warning-soft:#fff7e9'),'Sage and amber design tokens are missing');
 
+assert.ok(focus.includes('color-scheme:light'),'Theme must be light-first');
+assert.ok(!html.includes('gothic.css')&&!sw.includes('gothic-scene.svg'),'Old Gothic visual assets still loaded');
+assert.ok(html.includes('content="#F4F6F5"'),'Browser theme color must match new light UI');
+const manifest=JSON.parse(read('manifest.webmanifest'));
+assert.equal(manifest.theme_color,'#F4F6F5');
+assert.equal(manifest.background_color,'#F4F6F5');
+const workflow=read('.github/workflows/pages.yml');
+assert.ok(workflow.includes('styles.css focus.css'),'Published bundle must contain focus.css');
+assert.ok(!workflow.includes('gothic-scene.svg'),'Do not publish retired Gothic artwork');
 for(const x of ['view-sources','teacherSettings','view-day','view-catalog','view-stats'])assert.ok(html.includes('id="'+x+'"'));
 for(const x of ['selectedSource','topicQuery','matchedVideo','renderSources','instructors:'])assert.ok(app.includes(x));
 
