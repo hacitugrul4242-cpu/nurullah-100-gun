@@ -8,7 +8,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="./icon.svg">
 <link rel="apple-touch-icon" href="./icon.svg">
-<link rel="stylesheet" href="./styles.css?v=1">
+<link rel="stylesheet" href="./styles.css?v=2">
 <title>Nurullah | 100 Günlük TYT + AYT</title>
 </head>
 <body>
@@ -24,10 +24,10 @@
   <section class="hero-grid">
     <div class="surface hero">
       <div class="eyebrow">100 GÜNLÜK AKADEMİK YOL HARİTASI</div>
-      <h2>Konu temelini kur.<br><em>İlerlemeni ölç.</em></h2>
-      <p>Genel YKS konu adlarıyla sade günlük çalışma; ayrıntılı kazanımlar için ayrı envanter. Bu plan Yusuf'un telafi programından bağımsız oluşturulmuştur.</p>
+      <h2>75 günde konu hedefi.<br><em>25 gün soru ve deneme.</em></h2>
+      <p>TYT'ye güçlü başlangıç, AYT'ye kademeli geçiş ve son 25 günde soru–deneme odaklı çalışma. Ayrıntılı kazanımları referans PDF'den kontrol et; bu program Yusuf'un planından bağımsızdır.</p>
       <div class="chips">
-        <span>TYT + Sayısal AYT</span><span>100 gün</span><span>Yaklaşık 7 saat/gün hedefi</span>
+        <span>TYT + Sayısal AYT</span><span>75 gün konu + 25 gün uygulama</span><span>Yaklaşık 7 saat/gün hedefi</span>
       </div>
     </div>
     <div class="surface progress-panel">
@@ -89,7 +89,7 @@
     </section>
 
     <section class="view" id="view-catalog" hidden>
-      <div class="section-head"><div><div class="eyebrow">TÜM DERSLER</div><h2>Konu Envanteri</h2><p>Her standart konu başlığı programda en az bir kez planlanmıştır.</p></div></div>
+      <div class="section-head"><div><div class="eyebrow">TÜM DERSLER</div><h2>Konu Envanteri</h2><p>233 ana başlığın bütün çalışma oturumları ilk 75 güne yerleştirilmiştir. Alt kazanımları ayrıntılı kontrol PDF'inden takip et.</p></div></div>
       <div class="catalog-tools">
         <select id="courseFilter" aria-label="Ders filtrele"><option value="all">Bütün dersler</option></select>
         <input type="search" id="topicSearch" placeholder="Konu veya ders ara..." aria-label="Konu ara">
@@ -100,7 +100,14 @@
     <section class="view" id="view-stats" hidden>
       <div class="section-head"><div><div class="eyebrow">PERFORMANS VE GÜVENLİ KAYIT</div><h2>İlerleme Analizi</h2><p>Ders bazlı tamamlanma ve cihazlar arası aktarım araçları.</p></div></div>
       <div class="workspace">
-        <div class="surface side-panel"><h3>Ders ilerlemesi</h3><div id="subjectStats" class="subject-stats"></div></div>
+        <div class="stats-main">
+          <div class="surface side-panel"><h3>Ders ilerlemesi</h3><div id="subjectStats" class="subject-stats"></div></div>
+          <div class="surface side-panel">
+            <div class="panel-head"><h3>Geciken görevler</h3><span id="overdueTotal">0 açık görev</span></div>
+            <p class="aside-hint">Geciken bir göreve basarak ilgili güne gidebilirsin.</p>
+            <div id="overdueList" class="overdue-list"></div>
+          </div>
+        </div>
         <div class="sidebar">
           <section class="surface side-panel">
             <h3>Veri Yedekleme</h3>
@@ -125,7 +132,7 @@
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="./curriculum.js?v=1"></script>
-<script src="./plan.js?v=1"></script>
-<script src="./app.js?v=1"></script>
+<script src="./plan.js?v=2"></script>
+<script src="./app.js?v=2"></script>
 </body>
 </html>
