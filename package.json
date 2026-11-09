@@ -1,0 +1,15 @@
+{
+  "name": "nurullah-100-gun",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Nurullah TYT–AYT uygulamasının gerçek tarayıcı regresyon testleri",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/validate.mjs",
+    "test:e2e": "playwright test",
+    "test:all": "npm run test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}
