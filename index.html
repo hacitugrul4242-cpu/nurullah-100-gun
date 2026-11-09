@@ -95,7 +95,8 @@
     </section>
 
     <section class="view" id="view-catalog" hidden>
-      <div class="section-head"><div><div class="eyebrow">TÜM DERSLER</div><h2>Konu Envanteri</h2><p>233 ana başlığın bütün çalışma oturumları ilk 75 güne yerleştirilmiştir. Alt kazanımları ayrıntılı kontrol PDF'inden takip et.</p></div></div>
+      <div class="section-head"><div><div class="eyebrow">TÜM DERSLER</div><h2>Konu ve Alt Başlık Kontrolü</h2><p>233 ana başlık ve bunlara bağlı 1.096 alt çalışma başlığı. Alt maddeler referans çalışma envanterimizden alınmıştır; resmî MEB kazanımlarının bire bir kodlanmış listesi değildir.</p></div></div>
+      <div class="subtopic-summary" id="subtopicSummary" aria-live="polite">Alt konu listesi yükleniyor…</div>
       <div class="catalog-tools">
         <select id="courseFilter" aria-label="Ders filtrele"><option value="all">Bütün dersler</option></select>
         <input type="search" id="topicSearch" placeholder="Konu veya ders ara..." aria-label="Konu ara">
@@ -114,6 +115,7 @@
       <div class="workspace">
         <div class="stats-main">
           <div class="surface side-panel"><h3>Ders ilerlemesi</h3><div id="subjectStats" class="subject-stats"></div></div>
+          <div class="surface side-panel"><h3>Alt Konu Kontrolü</h3><p class="aside-hint">Ayrıntılı envanterde kontrol edilen alt başlıklar ana konu oturumlarından ayrı sayılır.</p><div id="subtopicStats" class="subtopic-summary">Alt konu listesi yükleniyor…</div></div>
           <div class="surface side-panel">
             <div class="panel-head"><h3>Geciken görevler</h3><span id="overdueTotal">0 açık görev</span></div>
             <p class="aside-hint">Geciken bir göreve basarak ilgili güne gidebilirsin.</p>
@@ -146,6 +148,7 @@
 <script src="./curriculum.js?v=1"></script>
 <script src="./plan.js?v=2"></script>
 <script src="./resources.js?v=1"></script>
-<script src="./app.js?v=5"></script>
+<script src="./subtopics-data.js?v=1"></script>
+<script src="./app.js?v=6"></script>
 </body>
 </html>
