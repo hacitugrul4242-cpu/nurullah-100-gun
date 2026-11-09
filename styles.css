@@ -123,3 +123,8 @@ footer{padding-top:28px;margin-top:20px;border-top:1px solid var(--stroke);font-
 .source-setting-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 @media(max-width:900px){.teacher-settings{grid-template-columns:1fr}}
 @media(max-width:580px){.tabs .tab{font-size:10px;padding:9px 4px;line-height:1.25}.task-resource-actions{margin-left:26px;gap:6px}.lesson-link{font-size:10px;padding:7px}.source-setting-head{display:block}.source-setting-head label{margin-top:9px}}
+
+/* Katalog konu bağlantıları */
+.catalog-topic{flex-wrap:wrap;gap:7px}
+.catalog-topic-info{display:flex;align-items:center;justify-content:space-between;gap:9px;flex:1 1 100%;min-width:0}
+.catalog-topic .lesson-link{margin:3px 0 2px auto}
