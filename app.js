@@ -68,10 +68,10 @@
     $('statLearned').textContent=countTopics();
     $('statOverdue').textContent=g.overdue;
     var phases=[
-      {start:1,end:35,name:'TYT Temel İnşası'},
-      {start:36,end:60,name:'TYT + AYT Geçiş'},
-      {start:61,end:90,name:'AYT Derinleşme'},
-      {start:91,end:100,name:'Tamamlama + Deneme'}
+      {start:1,end:25,name:'TYT Temel İnşası'},
+      {start:26,end:45,name:'TYT Kapanış + AYT Geçiş'},
+      {start:46,end:75,name:'AYT Derinleşme'},
+      {start:76,end:100,name:'Soru + Deneme + Onarım'}
     ];
     $('phases').innerHTML='';
     phases.forEach(function(p,i){
@@ -129,10 +129,18 @@
     });
     var selected=strip.children[day-1];if(selected)selected.scrollIntoView({inline:'center',block:'nearest'});
     var a=$('agenda');a.innerHTML='';
-    a.appendChild(makeSection('TYT Konuları','Temel edinme ve pekiştirme',p.tasks.filter(function(t){return t.exam==='TYT'}),day));
-    a.appendChild(makeSection('AYT Konuları','Ön koşul üzerine derinleşme',p.tasks.filter(function(t){return t.exam==='AYT'}),day));
+    if(day<=75){
+      var tyt=p.tasks.filter(function(t){return t.exam==='TYT'});
+      var ayt=p.tasks.filter(function(t){return t.exam==='AYT'});
+      if(tyt.length)a.appendChild(makeSection('TYT Konuları','Standart konu anlatımı ve pekiştirme',tyt,day));
+      if(ayt.length)a.appendChild(makeSection('AYT Konuları','Kademeli derinleşme ve uygulama',ayt,day));
+      if(!tyt.length&&!ayt.length)a.appendChild(makeSection('Konu Onarımı','Yeni konu yok; önceki yanlışları çalış',[],day));
+      fillTaskList($('checks'),p.checks,day);
+    }else{
+      a.appendChild(makeSection('Soru, Deneme ve Yanlış Analizi','75. günden sonraki uygulama dönemi',p.checks,day));
+      $('checks').innerHTML='<div class="empty">Bugünün soru ve deneme görevleri sol tarafta listelenmiştir.</div>';
+    }
     fillTaskList($('routines'),p.routines,day);
-    fillTaskList($('checks'),p.checks,day);
     $('routineCount').textContent=p.routines.filter(function(t){return done(t.id)}).length+'/'+p.routines.length;
     $('checkCount').textContent=p.checks.filter(function(t){return done(t.id)}).length+'/'+p.checks.length;
     var ratings=$('rating');ratings.innerHTML='';
@@ -167,6 +175,29 @@
     if(!target.children.length)target.innerHTML='<div class="empty">Aramaya uyan konu bulunamadı.</div>';
   }
   function renderStats(){
+    var overdue=$('overdueList');
+    if(overdue){
+      overdue.innerHTML='';
+      var current=todayIndex(),items=[];
+      PLAN.forEach(function(p){
+        if(p.day>=current)return;
+        tasksOf(p.day).forEach(function(t){if(!done(t.id))items.push({day:p.day,task:t})});
+      });
+      $('overdueTotal').textContent=items.length+' açık görev';
+      if(!items.length)overdue.innerHTML='<div class="empty">Geciken görev yok.</div>';
+      items.slice(0,60).forEach(function(entry){
+        var b=document.createElement('button');
+        b.type='button';b.className='overdue-item';
+        b.textContent='Gün '+entry.day+' · '+entry.task.label;
+        b.addEventListener('click',function(){tab='day';selectDay(entry.day);window.scrollTo?.({top:0,behavior:'smooth'})});
+        overdue.appendChild(b);
+      });
+      if(items.length>60){
+        var note=document.createElement('p');note.className='aside-hint';
+        note.textContent='İlk 60 gecikmiş görev gösteriliyor. Daha eskileri ilgili günlerin içinde bulabilirsin.';
+        overdue.appendChild(note);
+      }
+    }
     var target=$('subjectStats');target.innerHTML='';
     CATALOG.forEach(function(c){
       var n=c.topics.filter(function(t){return topicComplete(t.id)}).length;
