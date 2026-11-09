@@ -273,3 +273,60 @@ test('Backlog never counts future dates as missing',async ({page})=>{
   await expect(page.locator('#dailyBacklogCount')).toHaveText(day1+' eksik görev');
   await expect(page.locator('#dailyBacklogList .backlog-day')).toHaveCount(1);
 });
+
+
+test('Sage / Slate focus theme is light, legible, and keeps day selection clear',async ({page})=>{
+  const state=await page.evaluate(()=>{
+    const css=(sel)=>getComputedStyle(document.querySelector(sel));
+    return {
+      scheme:getComputedStyle(document.documentElement).colorScheme,
+      surface:css('.surface').backgroundColor,
+      text:css('body').color,
+      primary:getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(),
+      selectedDay:css('#dayStrip .day.active').backgroundColor,
+      before:getComputedStyle(document.body,'::before').content,
+      theme:document.querySelector('meta[name="theme-color"]').content,
+      sheet:[...document.styleSheets].map(s=>s.href||'').join(' ')
+    };
+  });
+  expect(state.scheme).toBe('light');
+  expect(state.surface).toBe('rgb(255, 255, 255)');
+  expect(state.text).toBe('rgb(34, 49, 43)');
+  expect(state.primary).toBe('#547e6d');
+  expect(state.selectedDay).toBe('rgb(225, 239, 229)');
+  expect(state.before).toBe('none');
+  expect(state.theme).toBe('#F4F6F5');
+  expect(state.sheet).toContain('focus.css?v=1');
+  expect(state.sheet).not.toContain('gothic.css');
+  await dayButton(page,1).click();
+  await assertDay(page,1);
+  await page.locator('#dayNext').click();
+  await assertDay(page,2);
+  await page.locator('#dayPrev').click();
+  await assertDay(page,1);
+});
+
+test('Missing tasks use soft amber and no horizontal page overflow on desktop or phone',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,-2));
+  await dayButton(page,3).click();
+  await expect(page.locator('#dailyBacklog')).toBeVisible();
+  const details=await page.evaluate(()=>{
+    const box=getComputedStyle(document.querySelector('#dailyBacklog'));
+    const count=getComputedStyle(document.querySelector('#dailyBacklogCount'));
+    return {
+      background:box.backgroundImage,
+      border:box.borderColor,
+      countColor:count.color,
+      width:document.documentElement.scrollWidth,
+      viewport:window.innerWidth
+    };
+  });
+  expect(details.background).toContain('linear-gradient');
+  expect(details.border).toBe('rgb(230, 216, 189)');
+  expect(details.countColor).toBe('rgb(129, 95, 48)');
+  expect(details.width).toBeLessThanOrEqual(details.viewport+2);
+  await page.locator('[data-tab="sources"]').click();
+  await expect(page.locator('.source-setting-card')).toHaveCount(15);
+  await page.locator('[data-tab="catalog"]').click();
+  await expect(page.locator('.catalog-course')).toHaveCount(15);
+});
