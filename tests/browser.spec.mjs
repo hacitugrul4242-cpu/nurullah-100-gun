@@ -280,7 +280,7 @@ test('Sage / Slate focus theme is light, legible, and keeps day selection clear'
     const css=(sel)=>getComputedStyle(document.querySelector(sel));
     return {
       scheme:getComputedStyle(document.documentElement).colorScheme,
-      surface:css('.surface').backgroundColor,
+      surface:css('.progress-panel').backgroundColor,
       text:css('body').color,
       primary:getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(),
       selectedDay:css('#dayStrip .day.active').backgroundColor,
