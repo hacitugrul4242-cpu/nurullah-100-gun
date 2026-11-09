@@ -221,8 +221,18 @@
         var complete=topicComplete(t.id),ids=topicTaskIds[t.id]||[];
         var doneCount=ids.filter(done).length;
         var row=document.createElement('div');row.className='catalog-topic';
-        row.innerHTML='<span>'+esc(t.title)+'</span><span class="topic-pill'+(complete?' completed':'')+'">'+
+        var info=document.createElement('div');info.className='catalog-topic-info';
+        info.innerHTML='<span>'+esc(t.title)+'</span><span class="topic-pill'+(complete?' completed':'')+'">'+
           (complete?'✓ Tamamlandı':doneCount+'/'+ids.length+' oturum')+'</span>';
+        row.appendChild(info);
+        var topicRef={topicId:t.id,title:t.title,part:1};
+        var direct=matchedVideo(topicRef,c.id);
+        var linkUrl=direct?direct.url:topicQuery(topicRef,c.id);
+        if(linkUrl){
+          var resourceLink=externalAnchor(direct?'▶ İlk videoyu aç':'⌕ Hocada konuyu ara',linkUrl,direct?'verified':'search');
+          if(direct)resourceLink.title='Doğrulanmış video: '+direct.title;
+          row.appendChild(resourceLink);
+        }
         box.appendChild(row);
       });target.appendChild(box);
     });
