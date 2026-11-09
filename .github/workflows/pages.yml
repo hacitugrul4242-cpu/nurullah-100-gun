@@ -21,6 +21,16 @@ jobs:
         uses: actions/checkout@v4
       - name: Validate all topics and lesson resources
         run: node tests/validate.mjs
+      - name: Set up Node.js for browser tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright test runner
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test desktop and mobile browsers
+        run: npm run test:e2e
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
