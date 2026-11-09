@@ -172,7 +172,7 @@
     items.forEach(function(t){target.appendChild(createTask(t,day))});
   }
   function renderDay(){
-    var p=PLAN[db.selectedDay],day=p.day,allowed=day<=todayIndex(),stats=dayStat(day);
+    var p=PLAN[db.selectedDay-1],day=p.day,allowed=day<=todayIndex(),stats=dayStat(day);
     $('currentTitle').textContent=day+'. Gün';
     $('currentDate').textContent=dateLabel(day);
     $('currentPhase').textContent=p.phase;
@@ -406,7 +406,7 @@
     });
     window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();installEvent=e;});
     if('serviceWorker' in navigator)window.addEventListener('load',function(){
-      navigator.serviceWorker.register('./sw.js?v=4',{updateViaCache:'none'}).catch(function(){});
+      navigator.serviceWorker.register('./sw.js?v=5',{updateViaCache:'none'}).catch(function(){});
     });
   }
   setup();save();render();
