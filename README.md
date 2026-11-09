@@ -56,13 +56,16 @@ Varsayılan eğitmenler:
 Kaynak verisi `resources.js` içerisinde, otomatik kapsam denetimi `tests/validate.mjs` dosyasındadır. Toplam **15 ders bölümü**, **17 doğrulanmış ilk video** ve **4 doğrulanmış kamp listesi** eklenmiştir. Diğer başlıklar için 233 ana konu başlığına özel eğitmen araması kullanılır.
 
 
-## Gothic Crimson tasarımı ve gün gezinme
+## Sage / Slate odak teması ve gün gezinme
 
-- Kullanıcı arayüzü koyu bordo–kırmızı gotik temaya geçirildi. Tasarım `gothic.css` ve özgün `gothic-scene.svg` dosyalarındadır.
+- Uygulama **açık, sakin ve düşük doygunluklu** Sage / Slate renk sistemiyle kullanılmaktadır; kırık beyaz zemin, beyaz kartlar, adaçayı yeşili vurgu ve soft amber eksik görevler.
+- Eski kırmızı-gotik görünüm ve arka plan illüstrasyonu **canlı sürümden çıkarılmıştır**. Güncel tema `focus.css` dosyasındadır.
+- Seçili gün soluk yeşil, tamamlanmış gün yeşil, kısmi tamamlanan gün sıcak açık amber ile ayırt edilir. Kontrast ve klavye odağı korunur.
 - Gün seçici şeridinin ilk üç günü sol kenarda kalır; otomatik ortalama kaynaklı **1. gün kaybolması** giderildi.
 - **Önceki / Sonraki** okları, klavyede sol-sağ yön tuşları ve Home/End ile gezinme desteklenir.
-- Gün 1–100 aralığında tüm programlar incelenebilir; ileri tarihli günlerin görev işaretleri önceki güvenlik kuralıyla kilitlidir.
-- Kayıt anahtarı, 100 günlük görev kimlikleri ve JSON yedekleme biçimi değiştirilmedi.
+- Eksik görevler ayrı bir yumuşak amber panelde asıl günlerine göre görüntülenir ve kendi görev kimlikleriyle tamamlanır.
+- Gün 1–100 aralığında bütün programlar incelenebilir; ileri tarihli görev işaretleri kilitlidir.
+- **Kayıt anahtarı, konu dağılımı, görev kimlikleri, alt konu işaretleri ve JSON yedekleme biçimi değiştirilmemiştir.**
 
 ## Kaynak notu
 
