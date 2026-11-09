@@ -156,3 +156,66 @@ test('Curriculum and chosen teachers link to matching subject searches',async ({
   expect(decodeURIComponent(searchUrl)).toContain('Mert Hoca');
   expect(decodeURIComponent(searchUrl)).toContain('Temel');
 });
+
+
+test('All 1,096 editorial subtopics load and persist independently of daily tasks',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,-1));
+  await page.locator('[data-tab="catalog"]').click();
+  await expect(page.locator('#subtopicSummary')).toContainText('1096');
+  await expect(page.locator('.subtopic-toggle')).toHaveCount(233);
+  await page.locator('#courseFilter').selectOption('tyt-mat');
+  await page.locator('#topicSearch').fill('Temel Kavramlar');
+  await expect(page.locator('.subtopic-toggle')).toHaveCount(1);
+  await page.locator('.subtopic-toggle').click();
+  await expect(page.locator('.subtopic-line').first()).toBeVisible();
+  await page.locator('.subtopic-line input').first().check();
+  await expect(page.locator('#subtopicSummary')).toContainText('1 / 1096');
+  await page.reload();
+  await page.locator('[data-tab="catalog"]').click();
+  await page.locator('#courseFilter').selectOption('tyt-mat');
+  await page.locator('#topicSearch').fill('Temel Kavramlar');
+  await page.locator('.subtopic-toggle').click();
+  await expect(page.locator('.subtopic-line input').first()).toBeChecked();
+});
+
+test('Future subtopics cannot be marked before the first scheduled day',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,1));
+  await page.locator('[data-tab="catalog"]').click();
+  await expect(page.locator('#subtopicSummary')).toContainText('1096');
+  await page.locator('#courseFilter').selectOption('tyt-mat');
+  await page.locator('#topicSearch').fill('Temel Kavramlar');
+  await page.locator('.subtopic-toggle').click();
+  await expect(page.locator('.subtopic-line input').first()).toBeDisabled();
+  await expect(page.locator('.subtopic-locked')).toBeVisible();
+});
+
+test('Subtopic checks survive JSON export/import without changing main completion',async ({page})=>{
+  await setStart(page,await shiftLocalDate(page,-1));
+  await page.locator('[data-tab="catalog"]').click();
+  await expect(page.locator('#subtopicSummary')).toContainText('1096');
+  await page.locator('#courseFilter').selectOption('tyt-mat');
+  await page.locator('#topicSearch').fill('Temel Kavramlar');
+  await page.locator('.subtopic-toggle').click();
+  await page.locator('.subtopic-line input').first().check();
+  await page.locator('[data-tab="stats"]').click();
+  const downloadPromise=page.waitForEvent('download');
+  await page.locator('#exportBtn').click();
+  const download=await downloadPromise;
+  const exported=JSON.parse(await readFile(await download.path(),'utf8'));
+  expect(exported.subtopicProgress['tyt-mat-01:0']).toBe(true);
+  expect(Object.keys(exported.progress).length).toBe(0);
+  page.once('dialog',d=>d.accept());
+  await page.locator('#resetBtn').click();
+  await expect(page.locator('#subtopicStats')).toContainText('0 / 1096');
+  page.once('dialog',d=>d.accept());
+  await page.locator('#importFile').setInputFiles({
+    name:'nurullah-checklist.json',mimeType:'application/json',
+    buffer:Buffer.from(JSON.stringify(exported),'utf8')
+  });
+  await expect(page.locator('#subtopicStats')).toContainText('1 / 1096');
+  await page.locator('[data-tab="catalog"]').click();
+  await page.locator('#courseFilter').selectOption('tyt-mat');
+  await page.locator('#topicSearch').fill('Temel Kavramlar');
+  await page.locator('.subtopic-toggle').click();
+  await expect(page.locator('.subtopic-line input').first()).toBeChecked();
+});
